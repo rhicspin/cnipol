@@ -18,6 +18,7 @@ private:
 
    static sqlite3      *fDB;
    static sqlite3_stmt *fSelectStmt, *fInsertStmt;
+   static int           fDBRefCnt;
 
 public:
 

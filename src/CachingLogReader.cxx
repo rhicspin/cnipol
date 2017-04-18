@@ -17,11 +17,14 @@ template<class T>
 sqlite3_stmt*	CachingLogReader<T>::fSelectStmt = NULL;
 template<class T>
 sqlite3_stmt*	CachingLogReader<T>::fInsertStmt = NULL;
+template<class T>
+int             CachingLogReader<T>::fDBRefCnt = 0;
 
 
 template<class T>
 CachingLogReader<T>::CachingLogReader()
 {
+   fDBRefCnt++;
    if (!fDB)
    {
       if (sqlite3_open(GetDatabaseFilePath().c_str(), &fDB) != SQLITE_OK)
@@ -53,7 +56,8 @@ CachingLogReader<T>::CachingLogReader()
 template<class T>
 CachingLogReader<T>::~CachingLogReader()
 {
-   if (fDB)
+   fDBRefCnt--;
+   if (fDB && (fDBRefCnt == 0))
    {
       if (sqlite3_finalize(fSelectStmt) != SQLITE_OK)
       {
