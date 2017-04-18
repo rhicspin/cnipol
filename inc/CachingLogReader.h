@@ -26,7 +26,7 @@ public:
    ~CachingLogReader();
 
    virtual string GetDatabaseFilePath();
-   virtual void Run(string cmd, opencdev::result_t *values);
+   virtual void Run(string cmd, opencdev::result_t *values) override;
 };
 
 #endif
