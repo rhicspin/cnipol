@@ -405,7 +405,6 @@ void AnaFillResult::Process(DrawObjContainer *ocOut)
 
    // do whatever with the combined fill results
    UpdateExternGraphRange();
-   FitExternGraphs();
    FitPCPolarGraphs();
    FitPCProfRGraphs();
    FitAgsPol();
@@ -1486,49 +1485,6 @@ void AnaFillResult::UpdateExternGraphRange()
       gr = GetSnakeCurGraph(ringId);
       if (gr)
          for (Int_t i=0; i<gr->GetN(); ++i) { gr->GetPoint(i, x, y); gr->SetPoint(i, x - fStartTime + 300*(gRandom->Rndm()-0.5), y); }
-   }
-}
-
-
-/** */
-void AnaFillResult::FitExternGraphs()
-{
-   time_t lumion  = fAnaFillExternResult.fTimeEventLumiOn  - fStartTime;
-   time_t lumioff = fAnaFillExternResult.fTimeEventLumiOff - fStartTime;
-
-   if (lumion >= lumioff) {
-      Error("FitExternGraphs", "Lumi-on and lumi-off markers are invalid");
-      return;
-   }
-
-   Info("FitExternGraphs", "Using range %ld - %ld", lumion, lumioff);
-
-
-   // Fit the intensity graphs
-   // Loop over rings
-   RingIdSetIter iRingId = gRunConfig.fRings.begin();
-
-   for ( ; iRingId != gRunConfig.fRings.end(); ++iRingId)
-   {
-      ERingId ringId = *iRingId;
-
-      TGraphErrors *grIntens = GetIntensGraph(ringId);
-
-      if (grIntens->GetN() == 0) continue;
-
-      //if ( fabs(lumioff - lumion) < 3600 ) continue;
-
-      stringstream ssFormula("");
-      //ssFormula << "[0] * 1./exp((x - " << lumion << ")/3600./[1])";
-      ssFormula << "[0] * (1.- (x - " << lumion << ")/3600./[1])";
-
-      TF1 fitFunc("fitFunc", ssFormula.str().c_str());
-      fitFunc.SetParNames("I_{0}", "Lifetime, h");
-      fitFunc.SetParameters(100, 50);
-      fitFunc.SetParLimits(0, 50, 300);
-      fitFunc.SetParLimits(1, 1, 200);
-
-      grIntens->Fit(&fitFunc, "M E", "", lumion, lumioff);
    }
 }
 

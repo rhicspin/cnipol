@@ -166,7 +166,6 @@ public:
    void                 CalcRhicAgsPolarRatio();
    void                 CalcAvrgAsymByBunch(const AnaMeasResult &amr, const MeasInfo &mi, DrawObjContainer &ocOut) const;
    void                 UpdateExternGraphRange();
-   void                 FitExternGraphs();
    void                 FitPCPolarGraphs();
    void                 FitPCProfRGraphs();
    void                 FitAgsPol();
