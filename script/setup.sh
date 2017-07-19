@@ -33,7 +33,7 @@ export LD_LIBRARY_PATH+=:$MYSQLPP_LIB_DIR
 
 # CNIPOL
 #export CNIPOL_DIR=~/pCpol/cnipol
-export CNIPOL_DIR=/direct/eic+u/schmidke/pCpro/pro1/cnipol
+export CNIPOL_DIR=/direct/eic+u/schmidke/pCpro/pro2/cnipol
 export CNIPOL_DATA_DIR=/eicdata/eic0005/run$RUN_ID/data
 #export CNIPOL_RESULTS_DIR=/eicdata/eic0005/run$RUN_ID/root_rp
 export CNIPOL_RESULTS_DIR=/eicdata/eic0005/run$RUN_ID/root

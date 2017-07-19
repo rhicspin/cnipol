@@ -3,7 +3,7 @@
 CHECKINGPERIOD=60 # in sec
 
 #source /direct/eic+u/gwebb/pCpol/cnipol/script/setup.sh 15 > /dev/null
-source /direct/eic+u/schmidke/pCpro/pro1/cnipol/script/setup.sh 17 > /dev/null
+source /direct/eic+u/schmidke/pCpro/pro2/cnipol/script/setup.sh 17 > /dev/null
 
 MY_HOME_DIR=/direct/eic+u/schmidke
 MY_REMOTE_HOME_DIR=/home/cfsd/schmidke

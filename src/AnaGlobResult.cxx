@@ -299,8 +299,8 @@ void AnaGlobResult::AddHJMeasResult(Int_t runID)
 	    tiltYelAngle=-0.1571;// The tilt angle in the yellow ring -9 degrees
 	 }
 	 if(runID ==17){
-	    tiltBluAngle=0.2042; // The tilt angle in the blue ring +11.7 degrees (04.03.17)
-	    tiltYelAngle=-0.1309;// The tilt angle in the yellow ring -7.5 degrees (04.03.17)
+	    tiltBluAngle=0.2094; // The tilt angle in the blue ring +12.0 degrees (Final asym processing)
+	    tiltYelAngle=-0.1326;// The tilt angle in the yellow ring -7.6 degrees (Final asym processing)
 	 }
 	 printf("AnaGlobalResult: Tilt angles blue %f yellow %f \n", cos(tiltBluAngle), cos(tiltYelAngle));
 	 bluPolar = bluPolar/ cos(tiltBluAngle);
