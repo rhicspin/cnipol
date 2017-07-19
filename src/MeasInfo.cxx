@@ -442,6 +442,9 @@ void MeasInfo::Update(const MseMeasInfoX& run)
    while (sstr >> chId) {
       DisableChannel(chId);
    }
+   if (!sstr.eof()) {
+      Fatal("Update", "Could not parse run period's disabled_channels from \"%s\", it must be whitespace-delimetered list of numbers", run.disabled_channels.c_str());
+   }
 
    // Check for horizontal targets and disable 90 degree detectors
    if (fTargetOrient == 'H') {
