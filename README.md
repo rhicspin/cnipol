@@ -218,6 +218,56 @@ After the tunnel has been established you can start the automated process by exe
 
 and you can put an ampersand at the end of the process if you want to hide it. The ampersand will allow you to continue working in your current terminal. Regardless, the process will be running and looking for new files every 60 seconds. 
 
+Maintaining local copies of GPM logs
+====================================
+
+There are currently two interfaces to query Gpm log data (such as bias currents, beam luminosities, ags polarization measurements):
+
+* ```SshLogReader``` (with caching optionally provided by ```CachingLogReader``` wrapper)
+* ```opencdev::LocalLogReader```
+
+The first one requires starting a new ssh connection to a machine in the CAD network to run exportLoggerData for each query. This method is generally slow and it is not working reliably with large volumes of parallel queries (which you get when you have multiple instances of asym running). The second method is fast and doesn't require tunnel at runtime, but it needs a full copy of the data available locally (on disk at path defined by ```$SLOW_CONTROL_LOG_DIR``` environment variable). There is a small script (```cdev_export.py```) to maintain such a copy.
+
+Installing dependencies for cdev_export.py
+------------------------------------------
+
+To have get it working you will need freetds and python-sybase libraries installed first:
+
+    wget http://mirrors.ibiblio.org/freetds/stable/freetds-0.91.tar.gz
+    tar zxf freetds-0.91.tar.gz
+    pushd freetds-0.91
+    ./configure --prefix=$HOME/local && make && make install
+    popd
+    wget --no-check-certificate https://sourceforge.net/projects/python-sybase/files/python-sybase/python-sybase-0.40pre2/python-sybase-0.40pre2.tar.gz
+    tar zxf python-sybase-0.40pre2.tar.gz
+    pushd python-sybase-0.40pre2
+    mkdir -p $HOME/local/lib64/python2.6/site-packages/
+    SYBASE=$HOME/local CFLAGS="-DHAVE_FREETDS -UWANT_BULKCOPY" PYTHONPATH=$PYTHONPATH:$HOME/local/lib64/python2.6/site-packages python setup.py install --prefix=$HOME/local
+    popd
+    
+You also need to get most recent version of opencdev:
+
+    git clone https://github.com/rhicspin/opencdev.git
+
+Running cdev_export.py
+----------------------
+
+The tool needs a connection to the database:
+
+    ssh yellowpc -L 5000:acnlinbd:5000 -Nf
+    
+Environment variables need to be setup to point to the libraries:
+
+    export SYBASE=$HOME/local
+    export PYTHONPATH=$PYTHONPATH:$HOME/local/lib64/python2.6/site-packages
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/local/lib
+    
+The script is ran as:
+
+    opencdev/tools/cdev_export.py
+
+It should iteratively download Gpm index database from remote Sybase server and save the contents into ```./sql``` directory. The sql files should be rendered to local Sqlite database using ```find sql -exec cat {} \; | sqlite db.sqlite``` command. Then raw SDDS files with the data itself are downloaded to ```./run_fyXX``` directory. Both ```db.sqlite``` and data files need to go into the directory pointed by ```$SLOW_CONTROL_LOG_DIR```.
+
 Alpha Calibration File
 ======================
 
