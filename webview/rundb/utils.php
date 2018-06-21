@@ -605,12 +605,13 @@ function getHJPCNorm($run, $benergy, $polId, $tgtOrient=null, $tgtId=null)
    //print_r($normHJPC);
    //print "-->\n";
 
+   // $tgtOrient should already be "H" or "V"
    if (is_numeric($tgtOrient) && $tgtOrient == 0)
       $tgtOrient = "H";
    else if (is_numeric($tgtOrient) && $tgtOrient == 1)
       $tgtOrient = "V";
-   else 
-      $tgtOrient = null;
+   //else 
+   //   $tgtOrient = null;
 
    //$tgtOrient = $tgtOrient == 0 ? "H" : ($tgtOrient == 1 ? "V" : null);
 

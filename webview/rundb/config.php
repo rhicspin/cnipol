@@ -158,7 +158,33 @@ $normHJPC[17][255]['B1U']['nomi'] = new pair(  0.960,    0.009);
 $normHJPC[17][255]['Y1D']['nomi'] = new pair(  0.991,    0.009);
 $normHJPC[17][255]['B2D']['nomi'] = new pair(  0.990,    0.010);
 $normHJPC[17][255]['Y2U']['nomi'] = new pair(  1.022,    0.010);
-
+/* updated with final hjet numbers 2018/06/21 */
+$normHJPC[17][255]['B1U']['H'][2] = new pair( 1.00242, 0.07597 );
+$normHJPC[17][255]['B1U']['H'][4] = new pair( 0.93785, 0.03126 );
+$normHJPC[17][255]['B1U']['H'][6] = new pair( 0.96630, 0.04218 );
+$normHJPC[17][255]['B1U']['V'][1] = new pair( 0.97667, 0.01591 );
+$normHJPC[17][255]['B1U']['V'][3] = new pair( 0.97891, 0.01805 );
+$normHJPC[17][255]['B1U']['V'][4] = new pair( 0.93936, 0.02402 );
+$normHJPC[17][255]['B1U']['V'][5] = new pair( 0.95206, 0.05173 );
+$normHJPC[17][255]['B1U']['V'][6] = new pair( 0.98427, 0.00827 );
+$normHJPC[17][255]['Y1D']['H'][1] = new pair( 1.05235, 0.01519 );
+$normHJPC[17][255]['Y1D']['H'][2] = new pair( 0.98226, 0.01426 );
+$normHJPC[17][255]['Y1D']['H'][3] = new pair( 0.94749, 0.02984 );
+$normHJPC[17][255]['Y1D']['H'][5] = new pair( 1.00086, 0.03996 );
+$normHJPC[17][255]['Y1D']['V'][1] = new pair( 0.93822, 0.02946 );
+$normHJPC[17][255]['Y1D']['V'][2] = new pair( 1.02758, 0.01128 );
+$normHJPC[17][255]['Y1D']['V'][3] = new pair( 0.87299, 0.07159 );
+$normHJPC[17][255]['Y1D']['V'][4] = new pair( 1.01064, 0.03569 );
+$normHJPC[17][255]['Y1D']['V'][5] = new pair( 0.91551, 0.02209 );
+$normHJPC[17][255]['Y1D']['V'][6] = new pair( 0.96267, 0.01687 );
+$normHJPC[17][255]['B2D']['H'][1] = new pair( 0.98928, 0.01989 );
+$normHJPC[17][255]['B2D']['H'][2] = new pair( 1.02879, 0.01254 );
+$normHJPC[17][255]['B2D']['H'][4] = new pair( 1.05944, 0.01130 );
+$normHJPC[17][255]['B2D']['V'][1] = new pair( 1.01651, 0.02131 );
+$normHJPC[17][255]['Y2U']['H'][1] = new pair( 1.02950, 0.01150 );
+$normHJPC[17][255]['Y2U']['H'][2] = new pair( 1.03245, 0.01997 );
+$normHJPC[17][255]['Y2U']['H'][4] = new pair( 0.94707, 0.02233 );
+$normHJPC[17][255]['Y2U']['V'][1] = new pair( 1.02009, 0.00902 );
 
 // sigma = fill-to-fill uncorrelated errors
 // delta = fill-to-fill correlated errors
