@@ -190,7 +190,7 @@ Similarly to `masym`, we provide a program to study time dependences in a set of
 alpha-calibration measurements. This program is called `malpha` and can be
 invoked as:
 
-    ./malpha -m <meas_list>
+    ./malpha -m <meas_list> -o <output_file>
 
 where `<meas_list>` is a file in `$CNIPOL_RESULTS_DIR/runXX/lists/` with a list
 of unique names corresponding to measurements recorded by the polarimeters when
