@@ -160,16 +160,17 @@ void AnaInfo::VerifyOptions()
    }
 
    MakeOutDir();
-
    fFileMeasInfo = fopen(this->GetAnaInfoFileName().c_str(), "w");
    gSystem->Chmod(this->GetAnaInfoFileName().c_str(), 0775);
 
    // Set default standard log output
    // TODO: make fFlagVerbose write log to file as well
+   Printf("%s", GetStdLogFileName().c_str()); //zchang
    if ((!fFileStdLogName.empty()) && (!fFlagVerbose)) {
       freopen(GetStdLogFileName().c_str(), "w", stdout);
-      fclose(stderr);
-      stderr = stdout;
+      //commented following 2 lines zchang
+      //fclose(stderr);
+      //stderr = stdout;
       gSystem->Chmod(GetStdLogFileName().c_str(), 0775);
    }
    else

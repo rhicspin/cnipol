@@ -172,6 +172,7 @@ public:
    void            EnableChannel(UShort_t chId);
    Bool_t          IsDisabledChannel(UShort_t chId);
    Bool_t          IsSiliconChannel(UShort_t chId);
+   Bool_t          IsSpinTuneChannel(UShort_t chId);
    UShort_t        GetNumActiveSiChannels() const;
    UShort_t        GetNumDisabledChannels() const;
    Bool_t          IsPmtChannel(UShort_t chId) const;

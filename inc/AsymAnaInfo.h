@@ -36,6 +36,8 @@ public:
               MODE_PMT               = 0x00000100,
               MODE_PULSER            = 0x00000200,
               MODE_STUDIES           = 0x00000400,
+              MODE_STM               = 0x01800000, //zchang
+              MODE_NOISE               = 0x02800000, //zchang noise study
               MODE_NO_GAIN_CORRECTION = 0x00000800};
 
    enum Option {OPTION_AC_DIPOLE_PERIOD = 0x20000004};
@@ -87,6 +89,8 @@ public:
    Bool_t      HasPmtBit() const;
    Bool_t      HasPulserBit() const;
    Bool_t      HasStudiesBit() const;
+   Bool_t      HasSTMBit() const; //zchang
+   Bool_t      HasNoiseBit() const; //zchang noise study
    Bool_t      HasNoGainCorrectionBit() const;
 
    ClassDef(AsymAnaInfo, 7)

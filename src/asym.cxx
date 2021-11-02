@@ -17,7 +17,7 @@
 #include "MseMeasInfo.h"
 #include "RawDataReader.h"
 #include "RunPeriod.h"
-
+//#include "SpinTuneMotor.h"
 
 using namespace std;
 
@@ -44,10 +44,13 @@ int main(int argc, char *argv[])
 
    // Book root file
    gAsymRoot->CreateRootFile(gAsymAnaInfo->GetRootFileName());
-
    MseMeasInfoX *mseMeasInfoX     = 0;
    MseMeasInfoX *mseMeasInfoXOrig = 0;
-
+   //spin tune motor zchang
+   //if(gAsymAnaInfo->HasSTMBit()){
+	//gAsymRoot->fSpinTuneMotor = new SpinTuneMotor;
+   //}
+   //
    // Check whether the measurement is already in database
    if (gAsymAnaInfo->fFlagUseDb) {
       mseMeasInfoX = gAsymDb->SelectRun(gMeasInfo->GetRunName());
@@ -145,7 +148,10 @@ int main(int argc, char *argv[])
    // set preliminary cuts.
 
    rawDataReader.ReadDataPassOne(*mseMeasInfoX);  // Fill primary histograms
-   gAsymRoot->FillDerivedPassOne();         // Fill other histograms from the primary ones
+   //zchang check noise cut
+   //if(gAsymRoot->fChannelEvent->PassCutNoiseLower()) gAsymRoot->FillDerivedPassOne();
+   gAsymRoot->FillDerivedPassOne();
+   // Fill other histograms from the primary ones
    if (gAsymAnaInfo->HasNormalBit())
    {
       gAsymRoot->Calibrate();

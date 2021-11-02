@@ -24,6 +24,10 @@
 #include "CnipolRunHists.h"
 #include "CnipolScalerHists.h"
 #include "CnipolSpinStudyHists.h"
+//zchang
+#include "SpinTuneMotor.h"
+#include "CnipolSpinTuneMotorHists.h"
+//
 #include "CnipolTargetHists.h"
 #include "DeadLayerCalibrator.h"
 #include "DeadLayerCalibratorEDepend.h"
@@ -87,7 +91,8 @@ AsymRoot::AsymRoot() :
    fRawEventTree(0), fAnaEventTree(0),
    fChannelEventTrees(), fAnaEvent(new AnaEvent()),
    fChannelEvent(new ChannelEvent()), fChannelData(new ChannelData()),
-   fChannelEvents(), fEventConfig(new EventConfig()), fHists(0)
+   //fChannelEvents(), fEventConfig(new EventConfig()), fSpinTuneMotor(new SpinTuneMotor), fHists(0)
+   fChannelEvents(), fEventConfig(new EventConfig()), fSpinTuneMotor(0), fHists(0)
 {
    gStyle->SetPalette(1);
    gStyle->SetOptFit(1111);
@@ -116,7 +121,7 @@ AsymRoot::~AsymRoot()
    delete fChannelEvent; fChannelEvent = 0;
    delete fChannelData;  fChannelData  = 0;
    delete fEventConfig;  fEventConfig  = 0;
-
+   if(fSpinTuneMotor) free(fSpinTuneMotor);
    if (!fHists) { delete fHists; fHists = 0; }
 }
 
@@ -161,8 +166,13 @@ void AsymRoot::CreateRootFile(string filename)
       oc  = new CnipolHists(dir);
       fHists->d["std"] = oc;
       fHistCuts[kCUT_CARBON].insert(oc);
+      //zchang
+      //if(gAsymAnaInfo->HasNoiseBit()) {
+      //fHistCuts[kCUT_CARBON].insert(oc);
+      //}else{
+       // fHistCuts[kCUT_NOISE_LOWER].insert(oc);
+      //}
    }
-
    // If requested create scaler histograms and add them to the container
    if (gAsymAnaInfo->HasScalerBit()) {
       dir = new TDirectoryFile("scalers", "scalers", "", fOutRootFile);
@@ -206,8 +216,33 @@ void AsymRoot::CreateRootFile(string filename)
       oc  = new CnipolAsymHists(dir);
       fHists->d["asym"] = oc;
       fHistCuts[kCUT_CARBON].insert(oc);
+      //zchang
+      //dir = new TDirectoryFile("sptm", "sptm", "", fOutRootFile);
+      //oc  = new CnipolSpinTuneMotorHists(dir);
+      //fHists->d["sptm"] = oc;
+      //fHistCuts[kCUT_CARBON].insert(oc);
+      //
    }
-
+   //zchang
+   if(gAsymAnaInfo->HasSTMBit()) {
+      gAsymRoot->fSpinTuneMotor = new SpinTuneMotor;
+      dir = new TDirectoryFile("sptm", "sptm", "", fOutRootFile);
+      oc  = new CnipolSpinTuneMotorHists(dir);
+      fHists->d["sptm"] = oc;
+      fHistCuts[kCUT_CARBON].insert(oc);
+   }
+   //zchang noise study
+   //if(gAsymAnaInfo->HasNoiseBit()) {
+      //dir = new TDirectoryFile("noise", "noise", "", fOutRootFile);
+      //oc  = new CnipolAsymHists(dir);
+      //fHists->d["noise"] = oc;
+      //fHistCuts[kCUT_NOISE_LOWER].insert(oc);
+      //
+      //dir = new TDirectoryFile("npreproc", "npreproc", "", fOutRootFile);
+      //oc  = new CnipolPreprocHists(dir);
+      //fHists->d["npreproc"] = oc;
+   //}
+   //
    if (gAsymAnaInfo->HasKinematBit()) {
       // Pre mass cut
       dir = new TDirectoryFile("kinema_premass", "kinema_premass", "", fOutRootFile);
@@ -320,8 +355,15 @@ void AsymRoot::AddSpinFlipperMarker()
    UInt_t revId = fChannelEvent->GetRevolutionId();
    fEventConfig->GetMeasInfo()->AddSpinFlipperMarker(revId);
 }
-
-
+void AsymRoot::FillSpinTuneMotor()
+{
+  UInt_t rev = fChannelEvent->GetRevolutionId();
+  UChar_t bx = fChannelEvent->GetBunchId();
+  unsigned long long mark = 120*rev + bx;
+  fSpinTuneMotor->Add(mark);
+  //test zchang
+  //cout<<dec<<"rev: "<<rev<<" bx: "<<(int)bx<<" size: "<<fSpinTuneMotor->Size()<<endl;
+}
 /** */
 void AsymRoot::FillPassOne(ECut cut)
 {
@@ -396,6 +438,9 @@ void AsymRoot::FillDerived()
    // asym depends on std
    if (gAsymAnaInfo->HasAsymBit() && gAsymAnaInfo->HasNormalBit() ) {
       fHists->d["asym"]->FillDerived( *fHists );
+      //zchang
+      //if(gAsymAnaInfo->HasNoiseBit())
+        //fHists->d["noise"]->FillDerived( *fHists );
    }
 
    // profile depends on asym

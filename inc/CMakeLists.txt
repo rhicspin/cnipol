@@ -32,6 +32,7 @@ SET(
 	${CMAKE_CURRENT_SOURCE_DIR}/CnipolRunHists.h
 	${CMAKE_CURRENT_SOURCE_DIR}/CnipolScalerHists.h
 	${CMAKE_CURRENT_SOURCE_DIR}/CnipolSpinStudyHists.h
+	${CMAKE_CURRENT_SOURCE_DIR}/CnipolSpinTuneMotorHists.h
 	${CMAKE_CURRENT_SOURCE_DIR}/CnipolTargetHists.h
 	${CMAKE_CURRENT_SOURCE_DIR}/DeadLayerCalibrator.h
 	${CMAKE_CURRENT_SOURCE_DIR}/DeadLayerCalibratorEDepend.h
@@ -48,6 +49,7 @@ SET(
 	${CMAKE_CURRENT_SOURCE_DIR}/RunConfig.h
 	${CMAKE_CURRENT_SOURCE_DIR}/RunQA.h
 	${CMAKE_CURRENT_SOURCE_DIR}/Target.h
+	${CMAKE_CURRENT_SOURCE_DIR}/SpinTuneMotor.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../contrib/polarim-online/include/rpoldata.h
 	${OPENCDEV_INCLUDE_DIR}/opencdev.h
 	PARENT_SCOPE

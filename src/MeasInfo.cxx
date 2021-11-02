@@ -442,9 +442,6 @@ void MeasInfo::Update(const MseMeasInfoX& run)
    while (sstr >> chId) {
       DisableChannel(chId);
    }
-   if (!sstr.eof()) {
-      Fatal("Update", "Could not parse run period's disabled_channels from \"%s\", it must be whitespace-delimetered list of numbers", run.disabled_channels.c_str());
-   }
 
    // Check for horizontal targets and disable 90 degree detectors
    if (fTargetOrient == 'H') {
@@ -473,12 +470,12 @@ void MeasInfo::Update(const MseMeasInfoX& run)
    } else if (RUNID >= 17000 && RUNID < 18000) { // Run 13
       fRunId = 13;
       gCh2WfdMap = ch2WfdMap_run13;
-   } else if (RUNID >= 18000 && RUNID < 20000) { // Run 15
+   } else if (RUNID >= 18000) {
       fRunId = 15;
       gCh2WfdMap = ch2WfdMap_run13;
-   } else if (RUNID >= 20000) { // Run 17
+   } else if(RUNID >= 20000){
       fRunId = 17;
-      gCh2WfdMap = ch2WfdMap_run11;
+      gCh2WfdMap = ch2WfdMap_run13;
    } else {
       // default Run value
    }
@@ -607,6 +604,14 @@ Bool_t MeasInfo::IsDisabledChannel(UShort_t chId)
 Bool_t MeasInfo::IsSiliconChannel(UShort_t chId)
 {
    if ( chId > 0 && chId <= N_SILICON_CHANNELS)
+      return true;
+
+   return false;
+}
+
+Bool_t MeasInfo::IsSpinTuneChannel(UShort_t chId)
+{
+   if (chId == 80)
       return true;
 
    return false;

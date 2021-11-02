@@ -1048,14 +1048,18 @@ ValErrPair AnaFillResult::CalcAvrgPolar(EPolarimeterId polId)
       denom += intens;
 
       // assume no correlation between the polarization slope (par1) and norm (par0)
-      polarErr = sqrt( polarSlopeErr*polarSlopeErr*(time - GetLumiOnRelTime())*(time - GetLumiOnRelTime())/3600/3600 + polarNormErr*polarNormErr);
+      //polarErr = sqrt( polarSlopeErr*polarSlopeErr*(time - GetLumiOnRelTime())*(time - GetLumiOnRelTime())/3600/3600 + polarNormErr*polarNormErr);
+      //zchang
+      polarErr = (time - GetLumiOnRelTime())/3600;
       numerErr += polarErr*intens;
       denomErr += intens;
    }
 
    // Internaly all polarization values are between 0 and 1 except graphs
    avrgPol.first  = numer/denom/100.;
-   avrgPol.second = numerErr/denomErr/100.; // weighted error
+   //avrgPol.second = numerErr/denomErr/100.; // weighted error
+   //zchang
+   avrgPol.second = TMath::Sqrt(TMath::Power(numerErr/denomErr*polarSlopeErr, 2)+TMath::Power(polarNormErr, 2))/100.; // weighted error
 
    return avrgPol;
 }
@@ -1487,7 +1491,6 @@ void AnaFillResult::UpdateExternGraphRange()
          for (Int_t i=0; i<gr->GetN(); ++i) { gr->GetPoint(i, x, y); gr->SetPoint(i, x - fStartTime + 300*(gRandom->Rndm()-0.5), y); }
    }
 }
-
 
 /** */
 void AnaFillResult::FitPCPolarGraphs()

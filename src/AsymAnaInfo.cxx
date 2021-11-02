@@ -63,6 +63,8 @@ Bool_t AsymAnaInfo::HasKinematBit()     const { return (fAsymModes & AsymAnaInfo
 Bool_t AsymAnaInfo::HasPmtBit()         const { return (fAsymModes & AsymAnaInfo::MODE_PMT)          == AsymAnaInfo::MODE_PMT; }
 Bool_t AsymAnaInfo::HasPulserBit()      const { return (fAsymModes & AsymAnaInfo::MODE_PULSER)       == AsymAnaInfo::MODE_PULSER; }
 Bool_t AsymAnaInfo::HasStudiesBit()     const { return (fAsymModes & AsymAnaInfo::MODE_STUDIES)      == AsymAnaInfo::MODE_STUDIES; }
+Bool_t AsymAnaInfo::HasSTMBit()     const { return (fAsymModes & AsymAnaInfo::MODE_STM)      == AsymAnaInfo::MODE_STM; } //zchang
+Bool_t AsymAnaInfo::HasNoiseBit()     const { return (fAsymModes & AsymAnaInfo::MODE_NOISE)      == AsymAnaInfo::MODE_NOISE; } //zchang noise study
 Bool_t AsymAnaInfo::HasNoGainCorrectionBit() const { return (fAsymModes & AsymAnaInfo::MODE_NO_GAIN_CORRECTION) == AsymAnaInfo::MODE_NO_GAIN_CORRECTION; }
 
 
@@ -96,7 +98,7 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
    //extern char *optarg;
 
    int          option_index = 0;
-   char         cfile[32];
+//   char         cfile[32];
 
    static struct option long_options[] = {
       {"log",                 optional_argument,   0,   'l'},
@@ -125,6 +127,8 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
       {"pmt",                 no_argument,         0,   AsymAnaInfo::MODE_PMT},
       {"pulser",              no_argument,         0,   AsymAnaInfo::MODE_PULSER},
       {"studies",             no_argument,         0,   AsymAnaInfo::MODE_STUDIES},
+      {"stm",                 no_argument,         0,   AsymAnaInfo::MODE_STM}, //zchang
+      {"noise",                 no_argument,         0,   AsymAnaInfo::MODE_NOISE}, //zchang
       {"mode-alpha",          no_argument,         0,   AsymAnaInfo::MODE_ALPHA},
       {"mode-normal",         no_argument,         0,   AsymAnaInfo::MODE_NORMAL},
       {"mode-no-normal",      no_argument,         0,   AsymAnaInfo::MODE_NO_NORMAL},
@@ -301,7 +305,19 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
       case AsymAnaInfo::MODE_STUDIES:
          fAsymModes |= AsymAnaInfo::MODE_STUDIES;
          break;
-
+     //zchang
+      case AsymAnaInfo::MODE_STM:
+         //Info("STM Modes", Form("%lx\n", fAsymModes));
+         fAsymModes |= AsymAnaInfo::MODE_STM;
+         Info("STM Modes", Form("%lx\n", fAsymModes));
+         break;
+     //zchang noise study
+      case AsymAnaInfo::MODE_NOISE:
+         //Info("Noise Modes", Form("%lx\n", fAsymModes));
+         fAsymModes |= AsymAnaInfo::MODE_NOISE;
+         Info("Noise Modes", Form("%lx\n", fAsymModes));
+         break;
+     //
       case AsymAnaInfo::MODE_NO_GAIN_CORRECTION:
          fAsymModes |= AsymAnaInfo::MODE_NO_GAIN_CORRECTION;
          break;

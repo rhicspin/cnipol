@@ -58,6 +58,7 @@ ADD_LIBRARY(
 	CnipolRunHists.cxx
 	CnipolScalerHists.cxx
 	CnipolSpinStudyHists.cxx
+	CnipolSpinTuneMotorHists.cxx
 	CnipolTargetHists.cxx
 	DeadLayerCalibrator.cxx
 	DeadLayerCalibratorEDepend.cxx
