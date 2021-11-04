@@ -34,6 +34,7 @@
 #pragma link C++ class CnipolRunHists+;
 #pragma link C++ class CnipolScalerHists+;
 #pragma link C++ class CnipolSpinStudyHists+;
+#pragma link C++ class CnipolSpinTuneMotorHists+;
 #pragma link C++ class CnipolTargetHists+;
 #pragma link C++ class DeadLayerCalibrator+;
 #pragma link C++ class DeadLayerCalibratorEDepend+;
