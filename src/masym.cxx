@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 
    MAsymRoot mAsymRoot(mAsymAnaInfo);
    mAsymRoot.SetAnaGlobResult(&anaGlobResult);
-   Int_t runID;
+   Int_t runID = -1;
    Info("masym", "Starting first pass...");
 
    // Container with measurements passed QA cuts. Used to save time on opening
@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
       UShort_t      targetId        = gMM->fMeasInfo->GetTargetId();
       ETargetOrient targetOrient    = gMM->fMeasInfo->GetTargetOrient();
       Info("masym", "MeasId: %4.3f, targetOrient %i, targetId %i", runId, targetOrient, targetId );
-      if(runID == 13 ||runID == 15 || runID == 17 ){ // years with target last good run lists
+      if(runID == 13 ||runID == 15 || runID == 17 || runId == 22){ // years with target last good run lists
       	Int_t target_ok = anaGlobResult.GetTargetStatus(runId, targetOrient, targetId);
       	if(target_ok != 1) {
 	  Warning("masym","Measurement %9.3f had a broken target", runId);

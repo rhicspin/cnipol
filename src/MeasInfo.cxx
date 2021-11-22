@@ -833,6 +833,7 @@ EPolarimeterId MeasInfo::ExtractPolarimeterId(std::string runName)
  * "New system" streamer with backward-compatibility to old files.
  * Implemented as suggested in https://root.cern.ch/root/SchemaEvolution.html
  */
+/*
 void MeasInfo::Streamer(TBuffer &R__b)
 {
    // Stream an object of class MeasInfo.
@@ -846,9 +847,9 @@ void MeasInfo::Streamer(TBuffer &R__b)
       }
       TObject::Streamer(R__b);
       R__b >> fBeamEnergy;
-      fMachineParams.Streamer(R__b);
+      //fMachineParams.Streamer(R__b);
       R__b >> fHasMachineParamsInRawData;
-      fTargetParams.Streamer(R__b);
+      //fTargetParams.Streamer(R__b);
       R__b >> fExpectedGlobalTdcOffset;
       R__b >> fExpectedGlobalTimeOffset;
       { TString R__str; R__str.Streamer(R__b); fRunName = R__str.Data(); }
@@ -961,4 +962,4 @@ void MeasInfo::Streamer(TBuffer &R__b)
    } else {
       MeasInfo::Class()->WriteBuffer(R__b, this);
    }
-}
+}*/

@@ -268,6 +268,7 @@ void AsymRoot::CreateRootFile(string filename)
       dir = new TDirectoryFile("pulser", "pulser", "", fOutRootFile);
       oc  = new CnipolPulserHists(dir);
       fHists->d["pulser"] = oc;
+      fHistCuts[kCUT_PASSONE].insert(oc); //zchang
       //fHistCuts[kCUT_PASSONE_PULSER].insert(oc);
       //fHistCuts[kCUT_CARBON_EB].insert(oc);
    }
@@ -280,7 +281,8 @@ void AsymRoot::CreateRootFile(string filename)
    }
 
    // Should be reconsidered once preproc is used to fill raw hists for alpha runs
-   if (!gAsymAnaInfo->HasAlphaBit()) {
+   //if (!gAsymAnaInfo->HasAlphaBit()) {
+   if (!gAsymAnaInfo->HasAlphaBit() && !gAsymAnaInfo->HasPulserBit()) {// zchang
       dir = new TDirectoryFile("run", "run", "", fOutRootFile);
       fHists->d["run"] = new CnipolRunHists(dir);
 
@@ -492,7 +494,8 @@ void AsymRoot::FillProfileHists(UInt_t n, int32_t *hData)
 /** */
 void AsymRoot::FillRunHists()
 {
-   if (gAsymAnaInfo->HasAlphaBit()) return;
+   //if (gAsymAnaInfo->HasAlphaBit()) return;
+   if (gAsymAnaInfo->HasAlphaBit() || gAsymAnaInfo->HasPulserBit()) return; //zchang
 
    ((CnipolRunHists*) fHists->d["run"])->Fill(*gMeasInfo);
 }
@@ -648,14 +651,18 @@ void AsymRoot::UpdateCalibrator()
       fEventConfig->fCalibrator->CopyAlphaCoefs(*eventConfig->fCalibrator);
 
       if (!fEventConfig->GetAnaInfo()->HasNoGainCorrectionBit()) {
+         Info("UpdateCalibrator", "Apply bias current correction");
          fEventConfig->fCalibrator->ApplyBiasCurrentCorrection(gMeasInfo, true);
       } else {
+         Info("UpdateCalibrator", "Use plain alpha gain");
          fEventConfig->fCalibrator->UsePlainAlphaGain();
       }
 
       delete eventConfig;
       delete f;
 
+   }else if (anaInfo->HasPulserBit()){
+      Info("UpdateCalibrator", "Test pulser");
    } else {
       Fatal("UpdateCalibrator", "Cannot select calibrator for this kind of run");
    }
@@ -842,7 +849,8 @@ void AsymRoot::Finalize()
    fHists->Write(); // this is NOT equivalent to fOutRootFile->Write();
 
    fOutRootFile->cd();
-   fEventConfig->Write("measConfig");
+   //fEventConfig->Write("measConfig");
+   if(!gAsymAnaInfo->HasPulserBit()) fEventConfig->Write("measConfig"); //zchang
 
    // close fOutRootFile
    fOutRootFile->Close();

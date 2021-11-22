@@ -50,6 +50,7 @@ SET(
 	${CMAKE_CURRENT_SOURCE_DIR}/RunQA.h
 	${CMAKE_CURRENT_SOURCE_DIR}/Target.h
 	${CMAKE_CURRENT_SOURCE_DIR}/SpinTuneMotor.h
+	${CMAKE_CURRENT_SOURCE_DIR}/UserGroup.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../contrib/polarim-online/include/rpoldata.h
 	${OPENCDEV_INCLUDE_DIR}/opencdev.h
 	PARENT_SCOPE

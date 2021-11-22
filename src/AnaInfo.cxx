@@ -28,7 +28,7 @@ AnaInfo::AnaInfo() : TObject(),
    fAnaTimeCpu (0),
    fAsymEnv(),
    fFileMeasInfo(0), fFileStdLog(0),
-   fFileStdLogName("stdoe"), fFlagCopyResults(kFALSE), fFlagUseDb(true),
+   fFileStdLogName("stdoe"), fFlagCopyResults(kFALSE), fFlagUseDb(kFALSE),
    fFlagUpdateDb(kFALSE),    fFlagCreateThumbs(kFALSE), fFlagVerbose(false),
    fUserGroup(),
    fAlphaSourceCount(-1)

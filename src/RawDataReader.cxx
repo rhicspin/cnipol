@@ -409,7 +409,8 @@ void RawDataReader::ReadDataPassTwo(MseMeasInfoX &mseMeasInfo)
    mseMeasInfo.nevents_processed = gMeasInfo->fNEventsProcessed;
    mseMeasInfo.nevents_silicon   = gMeasInfo->fNEventsSilicon;
 
-   if (gAsymAnaInfo->HasAlphaBit())
+   //if (gAsymAnaInfo->HasAlphaBit())
+   if (gAsymAnaInfo->HasAlphaBit() || gAsymAnaInfo->HasPulserBit()) //zchang
       mseMeasInfo.beam_energy = 0;
    else
       mseMeasInfo.beam_energy = gMeasInfo->GetBeamEnergyReal();
@@ -894,14 +895,17 @@ void ProcessRecord(const recordMeasTypeStruct &rec)
 /** */
 void ProcessRecord(const recordPolAdoStruct &rec, MseMeasInfoX &mseMeasInfo)
 {
-   if (!gAsymAnaInfo->HasAlphaBit()) DecodeTargetID( (polDataStruct &) rec.data, mseMeasInfo);
+   //if (!gAsymAnaInfo->HasAlphaBit()) 
+   if (!gAsymAnaInfo->HasAlphaBit() && !gAsymAnaInfo->HasPulserBit()) //zchang
+     DecodeTargetID( (polDataStruct &) rec.data, mseMeasInfo);
 }
 
 
 /** */
 void ProcessRecord(const recordpCTagAdoStruct &rec, MseMeasInfoX &mseMeasInfo)
 {
-   if (!gAsymAnaInfo->HasTargetBit() || gAsymAnaInfo->HasAlphaBit()) return;
+   //if (!gAsymAnaInfo->HasTargetBit() || gAsymAnaInfo->HasAlphaBit()) return;
+   if (!gAsymAnaInfo->HasTargetBit() || gAsymAnaInfo->HasAlphaBit() || gAsymAnaInfo->HasPulserBit()) return; //zchang
 
    gNDelimeters  = (rec.header.len - sizeof(rec.header)) / sizeof(pCTargetStruct);
 

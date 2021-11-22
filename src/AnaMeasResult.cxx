@@ -154,6 +154,7 @@ ValErrPair AnaMeasResult::GetPCProfR() const
  * "New system" streamer with backward-compatibility to old files.
  * Implemented as suggested in https://root.cern.ch/root/SchemaEvolution.html
  */
+/*
 void AnaMeasResult::Streamer(TBuffer &R__b)
 {
    // Stream an object of class AnaMeasResult.
@@ -245,4 +246,4 @@ void AnaMeasResult::Streamer(TBuffer &R__b)
    } else {
       AnaMeasResult::Class()->WriteBuffer(R__b, this);
    }
-}
+}*/

@@ -59,7 +59,9 @@ int main(int argc, char *argv[])
    if (mseMeasInfoX) { // If measurement found in database get its copy for later update with SQL
       mseMeasInfoXOrig  = new MseMeasInfoX(gMeasInfo->GetRunName());
       *mseMeasInfoXOrig = *mseMeasInfoX;
+      Info("MeasInfo", "found in DB");
    } else {            // If measurement not found in database create a new object
+      Info("MeasInfo", "not found in DB");
       mseMeasInfoX = new MseMeasInfoX(gMeasInfo->GetRunName());
    }
 
@@ -154,6 +156,7 @@ int main(int argc, char *argv[])
    // Fill other histograms from the primary ones
    if (gAsymAnaInfo->HasNormalBit())
    {
+      Info("calibrate",  "normal bit");
       gAsymRoot->Calibrate();
    }
    gAsymRoot->PostFillPassOne();            // Make decisions based on hist content/data
@@ -161,7 +164,7 @@ int main(int argc, char *argv[])
    // PassTwo
    gAsymRoot->PreFill();
    rawDataReader.ReadDataPassTwo(*mseMeasInfoX);
-   if (gAsymAnaInfo->HasAlphaBit() ) {
+   if (gAsymAnaInfo->HasAlphaBit()) {
       gAsymRoot->Calibrate();
    }
    gAsymRoot->FillDerived();

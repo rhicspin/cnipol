@@ -40,9 +40,9 @@ class MeasInfo : public TObject
 protected:
 
    Float_t             fBeamEnergy;
-   RecordMachineParams fMachineParams;
+   RecordMachineParams_t fMachineParams;
    Bool_t              fHasMachineParamsInRawData;
-   RecordTargetParams  fTargetParams;
+   RecordTargetParams_t  fTargetParams;
    Short_t             fExpectedGlobalTdcOffset;
    Float_t             fExpectedGlobalTimeOffset;
    std::string         fRunName;

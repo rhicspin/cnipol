@@ -299,7 +299,8 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
          break;
 
       case AsymAnaInfo::MODE_PULSER:
-         fAsymModes |= AsymAnaInfo::MODE_PULSER;
+         //fAsymModes |= AsymAnaInfo::MODE_PULSER;
+         fAsymModes = AsymAnaInfo::MODE_PULSER; //zchang
          break;
 
       case AsymAnaInfo::MODE_STUDIES:

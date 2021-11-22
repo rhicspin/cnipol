@@ -34,14 +34,14 @@ IF(${ROOT_VERSION} VERSION_GREATER "6.0")
 	      RecordTargetParams, AnaInfo.)
 ENDIF()
 
-EXECUTE_PROCESS(
-	COMMAND git submodule init
-	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-	)
-EXECUTE_PROCESS(
-	COMMAND git submodule update
-	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-	)
+#EXECUTE_PROCESS(
+#	COMMAND git submodule init
+#	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+#	)
+#EXECUTE_PROCESS(
+#	COMMAND git submodule update
+#	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+#	)
 ADD_SUBDIRECTORY(contrib/root-helper EXCLUDE_FROM_ALL)
 SET(Boost_USE_MULTITHREADED OFF) # this is what we have at AFS installation
 ADD_SUBDIRECTORY(contrib/opencdev EXCLUDE_FROM_ALL)

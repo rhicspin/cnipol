@@ -11,7 +11,7 @@
 #pragma link C++ class AnaFillExternResult;
 #pragma link C++ class AnaFillResult;
 #pragma link C++ class AnaGlobResult;
-#pragma link C++ class AnaInfo;
+#pragma link C++ class AnaInfo+;
 #pragma link C++ class AsymAnaInfo+;
 #pragma link C++ class BeamBunch+;
 #pragma link C++ class CalibCoefSet+;
@@ -53,13 +53,16 @@
 #pragma link C++ class MAsymRateHists+;
 #pragma link C++ class MAsymRoot+;
 #pragma link C++ class MAsymRunHists+;
-
+#pragma link C++ class UserGroup;
+#pragma link C++ class RecordHeaderStruct_t;
+#pragma link C++ class RecordMachineParams_t;
+#pragma link C++ class RecordTargetParams_t;
 // src
 #pragma link C++ class AnaFillExternResult;
 #pragma link C++ class AnaFillResult;
 #pragma link C++ class AnaGlobResult;
-#pragma link C++ class AnaMeasResult-;
-#pragma link C++ class MeasInfo-;
+#pragma link C++ class AnaMeasResult+;
+#pragma link C++ class MeasInfo+;
 
 // misc
 #pragma link C++ class ChannelCalibMap+;
