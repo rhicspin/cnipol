@@ -1,13 +1,12 @@
 [submodule "contrib/root-helper"]
 	path = contrib/root-helper
-	url = git://github.com/rhicspin/root-helper.git
+	url = git://github.com/zlchang/root-helper.git
 [submodule "contrib/opencdev"]
 	path = contrib/opencdev
-	url = git://github.com/rhicspin/opencdev.git
+	url = git://github.com/zlchang/opencdev.git
 [submodule "contrib/mysqlpp"]
 	path = contrib/mysqlpp
-	url = git://github.com/veprbl/mysqlpp.git
-	branch = cmake
+	url = git://github.com/zlchang/mysqlpp.git
 [submodule "contrib/polarim-online"]
 	path = contrib/polarim-online
-	url = https://github.com/rhicspin/polarim-online.git
+	url = https://github.com/zlchang/polarim-online.git

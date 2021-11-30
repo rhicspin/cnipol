@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CHECKINGPERIOD=1800 # in sec
+CHECKINGPERIOD=60 # in sec
 
 source /star/u/zchang/run22/cnipol/script/setup.sh 22 > /dev/null
 
@@ -55,6 +55,6 @@ while true;  do
 	fi
     done
     rm ${MY_HOME_DIR}/ASYMLOCK
-#    sleep ${CHECKINGPERIOD}
-    exit
+    sleep ${CHECKINGPERIOD}
+#    exit
 done
