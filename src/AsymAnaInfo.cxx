@@ -315,7 +315,7 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
      //zchang noise study
       case AsymAnaInfo::MODE_NOISE:
          //Info("Noise Modes", Form("%lx\n", fAsymModes));
-         fAsymModes |= AsymAnaInfo::MODE_NOISE;
+         fAsymModes = AsymAnaInfo::MODE_NOISE;
          Info("Noise Modes", Form("%lx\n", fAsymModes));
          break;
      //

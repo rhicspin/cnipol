@@ -717,25 +717,32 @@ static void ProcessRecordATPassTwo(const char *mSeek, RecordHeaderStruct *mHeade
          {
             gAsymRoot->fHists->d["targets"]->Fill(gAsymRoot->fChannelEvent);
          }
-
-         if (gAsymAnaInfo->HasNormalBit() &&
+         //zchang noise study
+         if (gAsymAnaInfo->HasNoiseBit() && ! gAsymAnaInfo->HasNormalBit() &&
              gAsymRoot->fChannelEvent->PassCutSiliconChannel() &&
-             //zchang noise study
-             //gAsymRoot->fChannelEvent->PassCutKinEnergyAEDepend() &&
              gAsymRoot->fChannelEvent->PassCutEnabledChannel() )
          {
 	         gAsymRoot->Fill(kCUT_NOISE);
 
-            //if (gAsymRoot->fChannelEvent->PassCutCarbonMass())
-	            //gAsymRoot->Fill(kCUT_CARBON);
             //zchang noise study -- need to revert to carbon cut for normal analysis
 	    if(gAsymRoot->fChannelEvent->PassCutNoiseLower())
 	     {
 	       //gAsymRoot->Fill(kCUT_NOISE_LOWER);
                //zchang noise cut test
 	       gAsymRoot->Fill(kCUT_CARBON);
-               
              }
+         }
+
+         if (gAsymAnaInfo->HasNormalBit() &&
+             gAsymRoot->fChannelEvent->PassCutSiliconChannel() &&
+             gAsymRoot->fChannelEvent->PassCutKinEnergyAEDepend() &&
+             gAsymRoot->fChannelEvent->PassCutEnabledChannel() )
+         {
+	         gAsymRoot->Fill(kCUT_NOISE);
+
+            if (gAsymRoot->fChannelEvent->PassCutCarbonMass())
+	            gAsymRoot->Fill(kCUT_CARBON);
+               
          }
 
          if ( gAsymRoot->fChannelEvent->PassCutSiliconChannel() )

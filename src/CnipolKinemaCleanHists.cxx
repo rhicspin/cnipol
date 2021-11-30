@@ -36,22 +36,22 @@ void CnipolKinemaCleanHists::BookHists()
 
    fDir->cd();
 
-   shName = "hPseudoMass";
+   shName = "hPseudoMassClean";
    o[shName] = new TH1F(shName.c_str(), shName.c_str(), 50, 0, 20);
    ((TH1*) o[shName])->SetTitle("; Mass; Events;");
    ((TH1*) o[shName])->SetOption("E1");
 
-   shName = "hMassFitChi2ByChannel";
+   shName = "hMassCleanFitChi2ByChannel";
    o[shName] = new TH1F(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
    ((TH1*) o[shName])->SetTitle("; Channel Id; #chi^{2};");
    ((TH1*) o[shName])->SetOption("hist GRIDX");
 
-   shName = "hMassFitMeanByChannel";
+   shName = "hMassCleanFitMeanByChannel";
    o[shName] = new TH1F(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
    ((TH1*) o[shName])->SetTitle("; Channel Id; Mean Mass;");
    ((TH1*) o[shName])->SetOption("E1 GRIDX");
 
-   shName = "hMassFitSigmaByChannel";
+   shName = "hMassCleanFitSigmaByChannel";
    o[shName] = new TH1F(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
    ((TH1*) o[shName])->SetTitle("; Channel Id; Mass Width;");
    ((TH1*) o[shName])->SetOption("E1 GRIDX");
@@ -79,7 +79,7 @@ void CnipolKinemaCleanHists::BookHists()
 
       oc->fDir->cd();
 
-      shName = "hPseudoMass_ch" + sChId;
+      shName = "hPseudoMassClean_ch" + sChId;
       hist = new TH1F(shName.c_str(), shName.c_str(), 50, 0, 20);
       hist->SetTitle("; Mass; Events;");
       hist->SetOption("E1");
@@ -111,7 +111,7 @@ void CnipolKinemaCleanHists::FillDerived()
 {
    Info("FillDerived()", "Called");
 
-   TH1* hPseudoMass = (TH1*) o["hPseudoMass"];
+   TH1* hPseudoMass = (TH1*) o["hPseudoMassClean"];
    
    for (UShort_t iCh=1; iCh<=N_SILICON_CHANNELS; iCh++) {
 
@@ -120,7 +120,7 @@ void CnipolKinemaCleanHists::FillDerived()
 
       DrawObjContainer *oc = d.find("channel" + sChId)->second;
 
-      TH1* hPseudoMass_ch = (TH1*) oc->o["hPseudoMass_ch" + sChId];
+      TH1* hPseudoMass_ch = (TH1*) oc->o["hPseudoMassClean_ch" + sChId];
       hPseudoMass->Add(hPseudoMass_ch);
    }
 }
@@ -137,7 +137,7 @@ void CnipolKinemaCleanHists::PostFill()
    //fitfunc.SetParameter(1, 0);
    //fitfunc.SetParLimits(1, -1, 1);
 
-   TH1* hPseudoMass = (TH1*) o["hPseudoMass"];
+   TH1* hPseudoMass = (TH1*) o["hPseudoMassClean"];
       
    if (hPseudoMass->Integral() <= 0) {
       Error("PostFill", "Mass distribution is empty");
@@ -153,9 +153,9 @@ void CnipolKinemaCleanHists::PostFill()
       hPseudoMass->GetListOfFunctions()->Clear();
    }
 
-   TH1* hMassFitChi2ByChannel  = (TH1*) o["hMassFitChi2ByChannel"];
-   TH1* hMassFitMeanByChannel  = (TH1*) o["hMassFitMeanByChannel"];
-   TH1* hMassFitSigmaByChannel = (TH1*) o["hMassFitSigmaByChannel"];
+   TH1* hMassFitChi2ByChannel  = (TH1*) o["hMassCleanFitChi2ByChannel"];
+   TH1* hMassFitMeanByChannel  = (TH1*) o["hMassCleanFitMeanByChannel"];
+   TH1* hMassFitSigmaByChannel = (TH1*) o["hMassCleanFitSigmaByChannel"];
 
    // Fit channel histograms
    ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
@@ -167,7 +167,7 @@ void CnipolKinemaCleanHists::PostFill()
 
       DrawObjContainer *oc_ch = d.find("channel" + sChId)->second;
 
-      TH1* hPseudoMass_ch = (TH1*) oc_ch->o["hPseudoMass_ch" + sChId];
+      TH1* hPseudoMass_ch = (TH1*) oc_ch->o["hPseudoMassClean_ch" + sChId];
       
       if (hPseudoMass_ch->Integral() <= 0) {
          Error("PostFill", "Mass distribution for channel %s is empty", sChId.c_str());

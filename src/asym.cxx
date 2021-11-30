@@ -44,6 +44,7 @@ int main(int argc, char *argv[])
 
    // Book root file
    gAsymRoot->CreateRootFile(gAsymAnaInfo->GetRootFileName());
+   //gAsymRoot->Finalize(); return 1;
    MseMeasInfoX *mseMeasInfoX     = 0;
    MseMeasInfoX *mseMeasInfoXOrig = 0;
    //spin tune motor zchang

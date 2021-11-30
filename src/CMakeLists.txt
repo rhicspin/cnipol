@@ -87,6 +87,7 @@ ADD_LIBRARY(
 	Target.cxx
 	TargetInfo.cxx
 	TargetUId.cxx
+        AfterBurner.cxx
 	revision-export.cxx
 	Dict.cxx
 	cnipol_toolkit.cxx

@@ -166,13 +166,17 @@ void AsymRoot::CreateRootFile(string filename)
       oc  = new CnipolHists(dir);
       fHists->d["std"] = oc;
       fHistCuts[kCUT_CARBON].insert(oc);
-      //zchang
-      //if(gAsymAnaInfo->HasNoiseBit()) {
-      //fHistCuts[kCUT_CARBON].insert(oc);
-      //}else{
-       // fHistCuts[kCUT_NOISE_LOWER].insert(oc);
-      //}
    }
+   if (!gAsymAnaInfo->HasNormalBit() && gAsymAnaInfo->HasNoiseBit()) {
+      dir = new TDirectoryFile("calib", "calib", "", fOutRootFile);
+      fHists->d["calib"] = new CnipolCalibHists(dir);
+
+      dir = new TDirectoryFile("std", "std", "", fOutRootFile);
+      oc  = new CnipolHists(dir);
+      fHists->d["std"] = oc;
+      fHistCuts[kCUT_CARBON].insert(oc);
+      //fHistCuts[kCUT_NOISE_LOWER].insert(oc);
+    }
    // If requested create scaler histograms and add them to the container
    if (gAsymAnaInfo->HasScalerBit()) {
       dir = new TDirectoryFile("scalers", "scalers", "", fOutRootFile);
