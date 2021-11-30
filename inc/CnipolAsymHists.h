@@ -30,7 +30,7 @@ public:
    void FillDerived();
    void FillDerived(DrawObjContainer &oc);
    void PostFill();
-
+   void AfterBurner();
    ClassDef(CnipolAsymHists, 1)
 };
 

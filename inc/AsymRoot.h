@@ -87,6 +87,7 @@ public:
    void         FillTargetHists(Int_t n, Double_t *hData);
    void         FillProfileHists(UInt_t n, Int_t *hData);
    void         FillRunHists();
+   //void         AfterBurner();
    void         AddChannelEvent();
    void         PrintEventMap();
    void         PrintChannelEvent();

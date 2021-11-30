@@ -505,6 +505,11 @@ void AsymRoot::FillRunHists()
 }
 
 
+/*void AsymRoot::AfterBurner()
+{
+  if(gAsymAnaInfo->HasAsymBit())
+    ((CnipolAsymHists*) fHists->d["asym"])->AfterBurner();
+}*/
 /**
  *
  */

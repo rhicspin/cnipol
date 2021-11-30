@@ -171,6 +171,8 @@ int main(int argc, char *argv[])
    gAsymRoot->FillDerived();
    gAsymRoot->PostFill();
 
+   //gAsymRoot->AfterBurner();
+
    if (gAsymAnaInfo->HasNormalBit())
    {
       // Add info to database entry
@@ -214,7 +216,6 @@ int main(int argc, char *argv[])
 
    if (gAsymAnaInfo->HasGraphBit())
       gAsymRoot->SaveAs("^.*$", gAsymAnaInfo->GetImageDir());
-
    // Close ROOT file
    gAsymRoot->Finalize();
 
