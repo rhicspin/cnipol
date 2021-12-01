@@ -181,7 +181,7 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
 
       case AnaInfo::FLAG_USE_DB:
          fFlagUseDb    = kTRUE;
-         fFlagUpdateDb = kTRUE;
+         //fFlagUpdateDb = kTRUE; //zchang
          break;
 
       case AnaInfo::FLAG_CREATE_THUMBS:
@@ -193,6 +193,7 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
          break;
 
       case AnaInfo::FLAG_UPDATE_DB:
+         fFlagUseDb    = kTRUE;
          fFlagUpdateDb = kTRUE;
          break;
 
