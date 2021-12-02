@@ -1,1 +1,1 @@
-*/30 * * * * /star/u/zchang/run22/cnipol/script/run_asym_r22.sh
+*/1 * * * * /star/u/zchang/run22/cnipol/script/runstar.csh >> /star/u/zchang/run22/cnipol/script/Dec01.log
