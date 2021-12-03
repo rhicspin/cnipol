@@ -1,10 +1,16 @@
 #!/bin/bash
+MY_HOME_DIR=/star/u/zchang
+
+if [ -e ${MY_HOME_DIR}/ASYMLOCK ]; then
+    exit;
+else
+    touch ${MY_HOME_DIR}/ASYMLOCK
+fi
 
 #CHECKINGPERIOD=60 # in sec
 
 source /star/u/zchang/run22/cnipol/script/setup.sh 22 > /dev/null
 
-MY_HOME_DIR=/star/u/zchang
 MY_REMOTE_HOME_DIR=/home/cfsd/zchang
 
 CNIPOL_REMOTE_BLUE_DATA_DIR=/home/blue/20$RUN_ID/data
@@ -15,11 +21,6 @@ RUNLIST=/gpfs02/eic/cnipol/runXX/lists/run${RUN_ID}_all
 echo "PATH=$PATH"
 echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
 
-if [ -e ${MY_HOME_DIR}/ASYMLOCK ]; then
-    exit;
-else
-    touch ${MY_HOME_DIR}/ASYMLOCK
-fi
     
 # check bluepc tunnel
 date > ${MY_HOME_DIR}/TSTTUNBLU
@@ -41,7 +42,7 @@ file_list="$(echo -n "${blue_file_list}${yellow_file_list}" | egrep "\.data$" | 
 echo Processing following files:
 echo "$file_list"
 echo "$file_list" >> ${RUNLIST}
-cat ${RUNLIST} | uniq > ${RUNLIST}.bak
+cat ${RUNLIST} | sort | uniq > ${RUNLIST}.bak
 mv ${RUNLIST}.bak ${RUNLIST}
 
 echo "$file_list" | while read -r file_name; do
