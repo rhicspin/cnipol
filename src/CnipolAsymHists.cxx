@@ -529,6 +529,6 @@ void CnipolAsymHists::AfterBurner()
   
   fNdetasym_lam->SetChisquare(chi2); 
   fNdetasym_lam->SetNDF(npfit-3);
-  hNdetasym_lam->GetListOfFunctions()->Add(fNdetasym_lam, "l");
+  gNdetasym_lam->GetListOfFunctions()->Add(fNdetasym_lam);
   Info("AfterBurner", "Done chi2/ndf = %lg/%d", chi2, npfit-3);
 }
