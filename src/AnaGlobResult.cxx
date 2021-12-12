@@ -723,7 +723,7 @@ void AnaGlobResult::UpdateInsertDb(AsymDbSql *asymDbSql)
       UInt_t fillId = fillResult.GetFillId();
 
       cout << endl;
-      Info("UpdateInsert", "fill %d pol %lg", fillId, );
+      Info("UpdateInsert", "fill %d", fillId);
 
 
       // test
