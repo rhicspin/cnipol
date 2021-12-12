@@ -49,11 +49,11 @@ setenv CNIPOL_RESULTS_DIR /gpfs02/eic/cnipol/zchang/run$RUN_ID/root
 #setenv CNIPOL_DATA_DIR /gpfs02/eic/cnipol/run17/data
 #setenv CNIPOL_RESULTS_DIR /eicdata/eic0005/run$RUN_ID/root_rp
 
-setenv PATH $PATH\:$CNIPOL_DIR/build
-setenv LD_LIBRARY_PATH $LD_LIBRARY_PATH\:$CNIPOL_DIR/build
+setenv PATH $PATH\:$CNIPOL_DIR/test
+setenv LD_LIBRARY_PATH $LD_LIBRARY_PATH\:$CNIPOL_DIR/test
 
 # UTILS
-setenv UTILS_LIB_DIR $CNIPOL_DIR/build/contrib/root-helper/utils/
+setenv UTILS_LIB_DIR $CNIPOL_DIR/test/contrib/root-helper/utils/
 
 setenv LD_LIBRARY_PATH $LD_LIBRARY_PATH\:$UTILS_LIB_DIR
 

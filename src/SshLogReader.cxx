@@ -23,7 +23,7 @@ string SshLogReader::GetSshCommand(const string &logger, const string &args)
    }
 
    snprintf(buf, sizeof(buf),
-            "ssh yellowpc \""
+            "ssh yellpc \""
             "setenv PATH /usr/controls/bin; setenv LD_LIBRARY_PATH /ride/release/X86/lib;"
             "exportLoggerData"
             " -logger '%s'"

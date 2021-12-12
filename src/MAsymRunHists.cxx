@@ -253,7 +253,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    styleMarker.Copy(*grSpinAngleVsMeas);
 
    shName = "hSpinAngleVsMeas_" + sPolId + "_" + sBeamE;
-   hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0, 1, 1, -20, 20);
+   hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0, 1, 1, -55, 55);
    hist->SetTitle("; Measurement Id; Spin Angle (Radial Comp.), degrees; ");
    hist->SetOption("DUMMY");
    hist->GetListOfFunctions()->Add(grSpinAngleVsMeas, "p");

@@ -54,7 +54,7 @@ void CnipolSpinTuneMotorHists::BookHists()
    styleMarker.SetMarkerColor(kGreen+2);
 
    shName = "hTimeInterval";
-   o[shName] = new TH1F(shName.c_str(), shName.c_str(), 300, 0, 300);
+   o[shName] = new TH1F(shName.c_str(), shName.c_str(), 300, 0, 30000);
    ((TH1*) o[shName])->SetTitle("; interval in bunch; counts");
 
    shName = "hChVsPhase";

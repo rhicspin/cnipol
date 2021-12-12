@@ -37,9 +37,9 @@ rsync -av ${MY_HOME_DIR}/TSTTUNYEL yellpc:${MY_REMOTE_HOME_DIR}/.
 rm ${MY_HOME_DIR}/TSTTUNYEL
 rsync -av yellpc:${MY_REMOTE_HOME_DIR}/TSTTUNYEL ${MY_HOME_DIR}/.
 
-set blue_file_list="`rsync -av --min-size=100k --include='*.data' --exclude='*' bluepc:${CNIPOL_REMOTE_BLUE_DATA_DIR}/ ${CNIPOL_DATA_DIR}/ | tee -a /dev/fd/2`"
+set blue_file_list="`rsync -av --min-size=500k --include='*.data' --exclude='*' bluepc:${CNIPOL_REMOTE_BLUE_DATA_DIR}/ ${CNIPOL_DATA_DIR}/ | tee -a /dev/fd/2`"
 #echo "blue: $blue_file_list"
-set yellow_file_list="`rsync -av --min-size=100k --include='*.data' --exclude='*' yellpc:${CNIPOL_REMOTE_YELLOW_DATA_DIR}/ ${CNIPOL_DATA_DIR}/ | tee -a /dev/fd/2`"
+set yellow_file_list="`rsync -av --min-size=500k --include='*.data' --exclude='*' yellpc:${CNIPOL_REMOTE_YELLOW_DATA_DIR}/ ${CNIPOL_DATA_DIR}/ | tee -a /dev/fd/2`"
 #echo "yellow: $yellow_file_list"
 set file_list=`echo -n ${blue_file_list}${yellow_file_list} | grep -oP '\S*.data(?=\s|$)'`
 
@@ -52,6 +52,8 @@ if ("$file_list" != "") then
 		set args="--update-db -g -r $run_name"
         	if ( $run_name =~ *alpha0* ) then
             		set args="--alpha $args"
+                else
+            		set args="$args"
         	endif
 		echo $CNIPOL_DIR/build/asym $args 
 		$CNIPOL_DIR/build/asym $args

@@ -723,7 +723,7 @@ void AnaGlobResult::UpdateInsertDb(AsymDbSql *asymDbSql)
       UInt_t fillId = fillResult.GetFillId();
 
       cout << endl;
-      Info("UpdateInsert", "fill %d", fillId);
+      Info("UpdateInsert", "fill %d pol %lg", fillId, );
 
 
       // test
@@ -764,7 +764,7 @@ void AnaGlobResult::UpdateInsertDb(AsymDbSql *asymDbSql)
             ValErrPair fillPCProfR = fillResult.GetPCProfR(polId, tgtOrient);
             if (fillPCProfR.second < 0) {
                Info("UpdateInsert", "Skip invalid profile measurement in polId %d, tgtOrient %d", polId, tgtOrient);
-               continue;
+               //continue;//don't skip now zchang
             }
 
 

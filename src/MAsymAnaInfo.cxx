@@ -81,7 +81,6 @@ void MAsymAnaInfo::ProcessOptions(int argc, char **argv)
 
       case AnaInfo::FLAG_USE_DB:
          fFlagUseDb    = kTRUE;
-         fFlagUpdateDb = kTRUE;
          break;
 
       case AnaInfo::FLAG_CREATE_THUMBS:
@@ -93,6 +92,7 @@ void MAsymAnaInfo::ProcessOptions(int argc, char **argv)
          break;
 
       case AnaInfo::FLAG_UPDATE_DB:
+         fFlagUseDb    = kTRUE;
          fFlagUpdateDb = kTRUE;
          break;
 

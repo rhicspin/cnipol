@@ -81,10 +81,10 @@ int main(int argc, char *argv[])
 
       ssMeasId >> nFillId;
 
-      if ( nFillId >= 17064 && nFillId <= 17084 ) {
+      /*if ( nFillId >= 17064 && nFillId <= 17084 ) {
          Error("masym", "Encountered vetoed fillId: %d. Skipping...", nFillId);
          continue;
-      }
+      }*/
 
       std::unique_ptr<TFile> f(new TFile(fileName.c_str(), "READ"));
 
@@ -136,22 +136,24 @@ int main(int argc, char *argv[])
          polarization    = fitResPolarPhi->Value(0) * 100;
          polarizationErr = fitResPolarPhi->FitResult::Error(0) * 100;
       }
-
+      Info("pol", "%lg", polarization);
       Float_t profileRatio     = gMM->fAnaMeasResult->fProfilePolarR.first;
       Float_t profileRatioErr  = gMM->fAnaMeasResult->fProfilePolarR.second;
 
       // the cut on polarization value should be removed
       //if (polarization > 99 || polarizationErr > 30 ||
-      if (polarization < 10 || polarization > 99 || polarizationErr > 30 ||
+      if (polarization < 10 || polarization > 99 || 
+          //polarizationErr > 30 ||
 	  // gRunConfig.fBeamEnergies.find(beamEnergy) == gRunConfig.fBeamEnergies.end() || // this line needs to be uncommented for Run13
           gMM->fMeasInfo->fMeasType != kMEASTYPE_SWEEP ||
-          (TMath::Abs(profileRatio) > 5.000) ||                             // exclude very large values
-          (TMath::Abs(profileRatio) > 1.000 && profileRatioErr < 0.05) ||   // exclude large values with small errors
-          (TMath::Abs(profileRatio) > 1.000 && profileRatioErr > 0.50) ||   // exclude large values with large errors
+          //(TMath::Abs(profileRatio) > 5.000) ||                             // exclude very large values
+          //(TMath::Abs(profileRatio) > 1.000 && profileRatioErr < 0.05) ||   // exclude large values with small errors
+          //(TMath::Abs(profileRatio) > 1.000 && profileRatioErr > 0.50) ||   // exclude large values with large errors
           //(profileRatioErr/TMath::Abs(profileRatio) > 2.000 && TMath::Abs(profileRatio) > 1.0) ||
-          profileRatioErr < 0.01 || profileRatioErr > 10 ||                 // exclude too small and too big errors. probably from failed fits?
+          //profileRatioErr < 0.01 || profileRatioErr > 10 ||                 // exclude too small and too big errors. probably from failed fits?
           //(TMath::Abs(profileRatio) < 0.001 && profileRatioErr < 0.01)
-          ( fillId >= 17064 && fillId <= 17084 )
+          //( fillId >= 17064 && fillId <= 17084 )//zchang run22
+          0
          )
       {
          Warning("masym", "Measurement %9.3f did not pass basic QA check", runId);
@@ -160,8 +162,8 @@ int main(int argc, char *argv[])
                 RunConfig::AsString(gMM->fMeasInfo->fMeasType).c_str(), profileRatio,
                 profileRatioErr );
 
-         f->Close();
-         continue;
+         //f->Close();
+         //continue;
       }
 
       mAsymRoot.UpdMinMax(*gMM);
@@ -191,8 +193,8 @@ int main(int argc, char *argv[])
    gH->d["fills"] = new MAsymFillHists(new TDirectoryFile("fills", "fills", "", &mAsymRoot));
    gH->d["rate"]  = new MAsymRateHists(new TDirectoryFile("rate",  "rate",  "", &mAsymRoot));
    gH->d["runs"]  = new MAsymRunHists (new TDirectoryFile("runs",  "runs",  "", &mAsymRoot));
-   gH->d["pmt"]   = new MAsymPmtHists (new TDirectoryFile("pmt",   "pmt",   "", &mAsymRoot));
-   gH->d["bias"]  = new MAsymBiasHists(new TDirectoryFile("bias",  "bias",  "", &mAsymRoot));
+   //gH->d["pmt"]   = new MAsymPmtHists (new TDirectoryFile("pmt",   "pmt",   "", &mAsymRoot));
+   //gH->d["bias"]  = new MAsymBiasHists(new TDirectoryFile("bias",  "bias",  "", &mAsymRoot));
 
    // Adjust min/max fill for histogram limits
    ((MAsymRunHists*) gH->d["runs"])->SetMinMaxFill(anaGlobResult.GetMinFill(), anaGlobResult.GetMaxFill());
@@ -202,7 +204,7 @@ int main(int argc, char *argv[])
    // Process run/fill results, i.e. calculate fill average, ...
    Info("masym", "Analyzing measurements...");
    Info("masym", "RunId %i", runID);
-   anaGlobResult.AddHJMeasResult(runID);
+   anaGlobResult.AddHJMeasResult(runID); //not for run22 yet zchang
    anaGlobResult.Process(gH);
 
    Info("masym", "Starting second pass...");
