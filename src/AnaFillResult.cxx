@@ -192,9 +192,11 @@ ValErrPair AnaFillResult::GetIntensDecay(ERingId ringId) const
       Warning("GetIntensDecay", "Fill %d. No fit function defined in intensity graph for ringId %d", fFillId, ringId);
       return decay;
    }
-
-   decay.first  = func->GetParameter(1);
-   decay.second = func->GetParError(1);
+   double p1 = func->GetParameter(1);
+   double p1e = func->GetParError(1);
+   double ff = TMath::Log(0.99);
+   decay.first  = p1 < 0 ? -ff/p1 : 0;
+   decay.second = p1 < 0 ? ff*p1e/p1/p1 : -1;
 
    return decay;
 }

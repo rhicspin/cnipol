@@ -53,7 +53,9 @@ int main(int argc, char *argv[])
    gRunConfig.fBeamEnergies.clear();
    gRunConfig.fBeamEnergies.insert(kINJECTION);
    gRunConfig.fBeamEnergies.insert(kBEAM_ENERGY_255);
-   gRunConfig.fBeamEnergies.insert(kBEAM_ENERGY_104);
+   gRunConfig.fBeamEnergies.insert(kBEAM_ENERGY_254);
+   //gRunConfig.fBeamEnergies.insert(kBEAM_ENERGY_253);
+   //gRunConfig.fBeamEnergies.insert(kBEAM_ENERGY_104);
    std::string filelist     = mAsymAnaInfo.GetMListFullPath();
 
    MAsymRoot mAsymRoot(mAsymAnaInfo);
@@ -194,7 +196,7 @@ int main(int argc, char *argv[])
    gH->d["rate"]  = new MAsymRateHists(new TDirectoryFile("rate",  "rate",  "", &mAsymRoot));
    gH->d["runs"]  = new MAsymRunHists (new TDirectoryFile("runs",  "runs",  "", &mAsymRoot));
    //gH->d["pmt"]   = new MAsymPmtHists (new TDirectoryFile("pmt",   "pmt",   "", &mAsymRoot));
-   //gH->d["bias"]  = new MAsymBiasHists(new TDirectoryFile("bias",  "bias",  "", &mAsymRoot));
+   gH->d["bias"]  = new MAsymBiasHists(new TDirectoryFile("bias",  "bias",  "", &mAsymRoot));
 
    // Adjust min/max fill for histogram limits
    ((MAsymRunHists*) gH->d["runs"])->SetMinMaxFill(anaGlobResult.GetMinFill(), anaGlobResult.GetMaxFill());

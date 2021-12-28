@@ -176,6 +176,10 @@ string RunConfig::AsString(EBeamEnergy beamEnergy)
 	   return "250";
    case kBEAM_ENERGY_255:
 	   return "255";
+   case kBEAM_ENERGY_254:
+	   return "254";
+   case kBEAM_ENERGY_253:
+	   return "253";
    default:
       return "UNK";
    }

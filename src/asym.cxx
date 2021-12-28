@@ -19,6 +19,9 @@
 #include "RunPeriod.h"
 //#include "SpinTuneMotor.h"
 
+#include "CachingLogReader.h"
+#include "SshLogReader.h"
+
 using namespace std;
 
 
@@ -106,7 +109,8 @@ int main(int argc, char *argv[])
           endTime = startTime + 600;
       }
 
-      opencdev::LocalLogReader log_reader(gAsymAnaInfo->GetSlowControlLogDir());
+      //opencdev::LocalLogReader log_reader(gAsymAnaInfo->GetSlowControlLogDir());
+      CachingLogReader<SshLogReader> log_reader;
       log_reader.query_timerange_mean("RHIC/Rf/Voltage_Monitor_StripChart", startTime, endTime, &mean_value);
       log_reader.query_timerange_mean("RHIC/PowerSupplies/rot-ps", startTime, endTime, &mean_value);
       log_reader.query_timerange_mean("RHIC/PowerSupplies/snake-ps", startTime, endTime, &mean_value);

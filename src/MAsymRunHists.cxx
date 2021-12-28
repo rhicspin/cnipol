@@ -842,8 +842,8 @@ void MAsymRunHists::BookHistsByRing(DrawObjContainer &oc, ERingId ringId, EBeamE
    // decay
    shName = "hIntensDecayVsFill_" + sRingId + "_" + sBeamE;
    hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
-   hist->GetYaxis()->SetRangeUser(0, 100);
-   hist->SetTitle("; Fill Id; Lifetime, hour;");
+   hist->GetYaxis()->SetRangeUser(0,25);
+   hist->SetTitle("; Fill Id; Lifetime, hour (reduced by 1%);");
    hist->SetOption("E1");
    styleMarker.Copy(*hist);
    oc.o[shName] = hist;
@@ -1392,6 +1392,11 @@ void MAsymRunHists::PostFill()
          hist  = (TH1*) oc_pol->o["hSpinAngleVsMeas_" + sPolId + "_" + sBeamE];
          graph = (TGraphErrors*) hist->GetListOfFunctions()->FindObject("grSpinAngleVsMeas");
          graph->Fit("pol0");
+         // Polarization
+         hist  = (TH1*) oc_pol->o["hPolarVsMeas_" + sPolId + "_" + sBeamE];
+         graph = (TGraphErrors*) hist->GetListOfFunctions()->FindObject("grPolarVsMeas");
+         graph->Fit("pol0");
+
 
          // Polarization
          hist  = (TH1*) oc_pol->o["hPolarVsFill_" + sPolId + "_" + sBeamE];
@@ -1572,6 +1577,7 @@ void MAsymRunHists::PostFillByPolarimeter(AnaGlobResult &agr, AnaFillResultMapIt
    AnaFillResult afr = iafr->second;
 
    if (afr.fPCPolars.find(polId) == afr.fPCPolars.end()) return;
+   if ((UInt_t) afr.GetFlattopEnergy() != beamE) return; //zchang match energy
    //if (afr.fProfPCPolars.find(polId) == afr.fProfPCPolars.end()) continue;
 
    string sPolId = RunConfig::AsString(polId);
@@ -1713,6 +1719,8 @@ void MAsymRunHists::PostFillByRing(AnaGlobResult &agr, AnaFillResultMapIter iafr
 {
    UInt_t fillId     = iafr->first;
    AnaFillResult afr = iafr->second;
+
+   if ((UInt_t) afr.GetFlattopEnergy() != beamE) return; //zchang match energy
 
    string sRingId = RunConfig::AsString(ringId);
    string sBeamE  = RunConfig::AsString(beamE);

@@ -57,7 +57,12 @@ if ("$file_list" != "") then
         	endif
 		echo $CNIPOL_DIR/build/asym $args 
 		$CNIPOL_DIR/build/asym $args
-		rsync -av --exclude='*.root' ${CNIPOL_RESULTS_DIR}/${run_name} ${CNIPOL_ONLINE_DIR} > /dev/null
+		#rsync -av --exclude='*.root' ${CNIPOL_RESULTS_DIR}/${run_name} ${CNIPOL_ONLINE_DIR} > /dev/null
+ 		mkdir -p ${CNIPOL_ONLINE_DIR}/${run_name}/images
+	        cp -rf ${CNIPOL_RESULTS_DIR}/${run_name}/images ${CNIPOL_ONLINE_DIR}/${run_name}/. > /dev/null
+	        cp ${CNIPOL_RESULTS_DIR}/${run_name}/stdoe.log ${CNIPOL_ONLINE_DIR}/${run_name} > /dev/null
+	        cp ${CNIPOL_RESULTS_DIR}/${run_name}/config_calib.dat ${CNIPOL_ONLINE_DIR}/${run_name} > /dev/null
+	        cp ${CNIPOL_RESULTS_DIR}/${run_name}/runconfig.php ${CNIPOL_ONLINE_DIR}/${run_name} > /dev/null
 	end
 	cat ${RUNLIST} | sort | uniq > ${RUNLIST}.bak
 	mv ${RUNLIST}.bak ${RUNLIST}

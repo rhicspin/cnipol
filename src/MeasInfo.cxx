@@ -15,6 +15,9 @@
 #include "MseMeasInfo.h"
 #include "RunPeriod.h"
 
+#include "CachingLogReader.h"
+#include "SshLogReader.h"
+
 #include "revision-export.h"
 
 ClassImp(MeasInfo)
@@ -785,11 +788,11 @@ vector<double> MeasInfo::GetBiasCurrents() const
       }
    }
 
-   AnaInfo *anaInfo = gAsymAnaInfo ? (AnaInfo*)gAsymAnaInfo : (AnaInfo*)gMAsymAnaInfo;
-
-   static opencdev::LocalLogReader log_reader(anaInfo->GetSlowControlLogDir());
-
+   //AnaInfo *anaInfo = gAsymAnaInfo ? (AnaInfo*)gAsymAnaInfo : (AnaInfo*)gMAsymAnaInfo;
+   //static opencdev::LocalLogReader log_reader(anaInfo->GetSlowControlLogDir());
+   CachingLogReader<SshLogReader> log_reader;
    string logger_name = BiasCurrentUtil::GetBiasCurrentLoggerName((EPolarimeterId)fPolId);
+   Info("BiasCurrent", "logger: %s", logger_name.c_str());
    opencdev::mean_result_t bias_mean_value;
 
    log_reader.query_timerange_mean(logger_name, startTime, endTime, &bias_mean_value);

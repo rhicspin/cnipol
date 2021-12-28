@@ -169,7 +169,7 @@ void MAsymSingleFillHists::BookHistsByPolarimeter(EPolarimeterId polId)
    o[shName] = hist;
 
    shName = "hBCVsFillTime_" + strDirName + "_" + sPolId;
-   hist = new TH2C(shName.c_str(), shName.c_str(), 1, fMinTime, fMaxTime, 1, -50, 0);
+   hist = new TH2C(shName.c_str(), shName.c_str(), 1, fMinTime, fMaxTime, 1, -45, 45);
    hist->SetTitle("; Time in Fill, hours; BiasCurrent, \\mu A;");
    hist->SetOption("DUMMY GRIDX GRIDY");
    //hist->GetXaxis()->SetTimeOffset(0, "local");
@@ -389,6 +389,12 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
       TH1* hIntensVsFillTime_ = (TH1*) o["hIntensVsFillTime_" + strDirName + "_" + sRingId];
 
       if (graphErrs && graphErrs->GetN() > 0) {
+         TF1 fitFunc("fitFunc", "exp([0]+[1]*x/3600)");
+         //fitFunc.SetParameter(0, 100);
+         //fitFunc.SetParameter(1, 100);
+         fitFunc.SetParNames("const", "life");
+         graphErrs->Fit(&fitFunc);
+         Info("PostFill", "Fitting intensity vs. time exp(%lg+x*(%lg))", fitFunc.GetParameter(0), fitFunc.GetParameter(1));
          ((TAttMarker*) hIntensVsFillTime_)->Copy(*graphErrs);
          graphErrs->SetMarkerSize(0.8);
          hIntensVsFillTime_->GetListOfFunctions()->Add(graphErrs, "p");
