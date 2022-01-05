@@ -18,7 +18,9 @@ class RunSelector
                                   "pr" => "profile_ratio",
                                   "at" => "ana_start_time",
                                   "av" => "asym_version",
-                                  "tgt");
+                                  "tgt",
+                                  "ph" => "phase",
+);
 
    function RunSelector()
    {

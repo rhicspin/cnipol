@@ -160,4 +160,5 @@ if (isset($_GET['runid']) && isset($_GET['chanid'])) {
 //}
 
 include("runinfo_index_test.html");
+
 ?>

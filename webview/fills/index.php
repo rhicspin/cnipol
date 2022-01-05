@@ -11,7 +11,9 @@ date_default_timezone_set('America/New_York');
 if ( isset($_GET['fillid']) && isset($_GET['rp']) )
 {
    $gFillId    = $_GET['fillid'];
+   $gFillId    = strip_tags($gFillId);
    $gAnaName   = "run".sprintf("%02d", $_GET['rp']);
+   $gAnaName   = strip_tags($gAnaName);
    $gAnaResDir = DATA_DIR."/$gAnaName/";
 
    // Check for correct and existing fillid

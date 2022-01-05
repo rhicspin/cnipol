@@ -709,7 +709,6 @@ static void ProcessRecordATPassTwo(const char *mSeek, RecordHeaderStruct *mHeade
                 }
             }
          }
-
          if (gAsymAnaInfo->fSaveTrees.any()) { gAsymRoot->AddChannelEvent(); }
 
          // Fill target histograms
@@ -738,7 +737,7 @@ static void ProcessRecordATPassTwo(const char *mSeek, RecordHeaderStruct *mHeade
              gAsymRoot->fChannelEvent->PassCutKinEnergyAEDepend() &&
              gAsymRoot->fChannelEvent->PassCutEnabledChannel() )
          {
-	         gAsymRoot->Fill(kCUT_NOISE);
+	        gAsymRoot->Fill(kCUT_NOISE);
 
             if (gAsymRoot->fChannelEvent->PassCutCarbonMass())
 	            gAsymRoot->Fill(kCUT_CARBON);

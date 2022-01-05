@@ -78,6 +78,8 @@ $strPolId = "<span class=\"s150 padding1 $cssPol\">$polId</span>";
 
 if ( isset($rc['A_N'][1]) && $rc['A_N'][1] == 0) $rc['A_N'][1] = 1e-10;
 
+$anpower = $rc['A_N'][1];
+
 $polarization = "&nbsp;";
 
 $norm    = getHJPCNorm($runPeriod, intval($rc['beam_energy']+0.5), $polId, $rc['target_orient'], $rc['target_id']);
@@ -177,7 +179,8 @@ A_N: <?=$rc['A_N'][1]?>
    <b>Run Period:</b> <?=$runPeriod?>
    <td>
    <b>H-Jet norm (A_N Scale):</b> <?=$norm->err > 0 ? $norm->ToString("", "%5.3f") : sprintf("%5.3f", $norm->val);?>
-   <td>&nbsp;
+   <!--<td>&nbsp;-->
+   <td><b>Analyzing power:</b> <?=$anpower?>
    <td>&nbsp;
 
 <tr>
@@ -469,7 +472,7 @@ Pulse integral vs (maximum) apmplitude
 <table class="simple00 cntr" cellspacing=15 align=center>
 <tr>
 <td align=center>
-<?=$gP->img('Ndetasym_ab/gNdetasym_lam')?>
+<?=$gP->img('asym/hNdetasym_lam')?>
 <div class="thumbcaption">
 Detector asymmetry vs azimuthal angle and the 3 parameter fit to the spin asymmetry (&epsilon;<sub>0</sub>), the spin tilt angle from vertical (&phi;<sub>0</sub>), and the luminosity up/down asymmetry (&lambda;).
 </div>
@@ -635,9 +638,8 @@ The same data as on the left plot but the measurements are binned
 -->
 
 </table>
-
+<!--
 <h2 id="profile_sec" class="count">Profiles</h2>
-<!-- {{{ -->
 <div id="div:profile_sec" class="section">
 
 <table class="simple00 cntr" cellspacing=15 align=center>
@@ -674,11 +676,11 @@ The same data as on the left plot but the measurements are binned
 </table>
 
 </div>
+-->
 <!-- }}} -->
 
-
+<!--
 <h1 id="longDetector_plots" class="count">Longitudinal Detectors</h1>
-<!-- {{{ -->
 <div id="div:longDetector_plots" class="section">
 
 <p>
@@ -740,6 +742,7 @@ Target->detector thickness Lmax vs. sweep time from detector 6
 </table>
 
 </div>
+-->
 <!-- }}} -->
 
 
@@ -828,14 +831,13 @@ are:<br>
 <td class=align_cm colspan=4>
 <?=$gP->img("std/hEventsVsChannel_cut2")?>
 -->
-
 </table>
+<!--
 <?php
 // only show this section for measurements processed later than Feb 13, 2015
 if ($rc['fAnaDateTime'] >= 1423851440) {
 ?>
 <h2 id="hjet_polar" class="count">PMT</h2>
-<!-- {{{ -->
 <div id="div:hjet_polar" class="section">
 
 <table class="simple00 cntr" cellspacing=15 align=center>
@@ -862,14 +864,12 @@ if ($rc['fAnaDateTime'] >= 1428969600) {
 }
 ?>
 </div>
-<!-- }}} -->
 <?php
 }
 ?>
 
 </div>
-<!-- }}} -->
-
+-->
 
 <h1 id="kinematics" class="count">Recoil Carbon Kinematics</h1>
 <!-- {{{ -->
@@ -883,17 +883,17 @@ if ($rc['fAnaDateTime'] >= 1428969600) {
 <td align=center>
 <?=$gP->img("kinema_premass/hPseudoMass")?>
 <td align=center>
-<?=$gP->img("kinema/hPseudoMass")?>
+<?=$gP->img("kinema/hPseudoMassClean")?>
 <td align=center>
 &nbsp;
 
 <tr>
 <td align=center>
-<?=$gP->img("kinema/hMassFitChi2ByChannel")?>
+<?=$gP->img("kinema/hMassCleanFitChi2ByChannel")?>
 <td align=center>
-<?=$gP->img("kinema/hMassFitMeanByChannel")?>
+<?=$gP->img("kinema/hMassCleanFitMeanByChannel")?>
 <td align=center>
-<?=$gP->img("kinema/hMassFitSigmaByChannel")?>
+<?=$gP->img("kinema/hMassCleanFitSigmaByChannel")?>
 
 
 <tr>

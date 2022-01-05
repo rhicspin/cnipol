@@ -290,7 +290,6 @@ void CnipolAsymHists::Fill(ChannelEvent *ch)
    Double_t time     = ((Double_t) ch->GetRevolutionId())/RHIC_REVOLUTION_FREQ;
 
    string sSS = gRunConfig.AsString( gMeasInfo->GetBunchSpin(bId) );
-
    ((TH1*) o.find("hChVsBunchId_"    + sSS)->second) -> Fill(bId, chId);
    ((TH1*) o.find("hChVsKinEnergyA_" + sSS)->second) -> Fill(kinEnergy, chId);
    ((TH1*) o.find("hChVsDelim_"      + sSS)->second) -> Fill(time, chId);

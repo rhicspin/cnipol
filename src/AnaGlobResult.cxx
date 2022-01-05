@@ -508,18 +508,21 @@ void AnaGlobResult::CalcPolarNorm()
       AnaFillResult *fillRslt = &iFill->second;
 
       PolId2ValErrMapConstIter iPolar     = fillRslt->fPCPolars.begin();
+      PolId2ValErrMapConstIter iPolarPhase     = fillRslt->fPCPolarPhases.begin();
       PolId2ValErrMapConstIter iProfPolar = fillRslt->fPCProfPolars.begin();
 
       for ( ; iPolar != fillRslt->fPCPolars.end(); ++iPolar, ++iProfPolar)
       {
          EPolarimeterId polId       = iPolar->first;
          ValErrPair     polarPC     = iPolar->second;
+         ValErrPair     phasePC     = iPolarPhase->second;
          ValErrPair     polarPCProf = iProfPolar->second;
          ERingId        ringId      = RunConfig::GetRingId(polId);
          string         sPolId      = RunConfig::AsString(polId);
 
          // Polarization profile scale factor
-         if (polarPC.second >= 0 && polarPCProf.second >= 0) {
+         //if (polarPC.second >= 0 && polarPCProf.second >= 0) {
+         if (polarPC.second >= 0 && polarPCProf.second >= 0 && phasePC.second > 0) {
             polarCrbAllSet    [polId].insert(polarPC);
             polarCrbProfAllSet[polId].insert(polarPCProf);
 
@@ -529,8 +532,9 @@ void AnaGlobResult::CalcPolarNorm()
          ValErrPair polarHJ = fillRslt->GetHJPolar(ringId);
 
          // For HJet normalization: Skip if there is no corresponding hjet result for this fill
-         if (polarPC.second < 0 || polarHJ.second < 0) {
-            Warning("CalcPolarNorm", "Fill %d, %s: p-Carbon or H-jet polarization not available", fillId, sPolId.c_str());
+         //if (polarPC.second < 0 || polarHJ.second < 0) {
+         if (polarPC.second < 0 || polarHJ.second < 0 || phasePC.second < 0) {
+            Warning("CalcPolarNorm", "Fill %d, %s: p-Carbon (%lg +/- %lg) or H-jet polarization (%lg +/- %lg) not available", fillId, sPolId.c_str(), polarPC.first, polarPC.second, polarHJ.first, polarHJ.second);
             continue;
          }
 
@@ -544,11 +548,12 @@ void AnaGlobResult::CalcPolarNorm()
          polarCrbSet[polId].insert(polarPC);
          polarJetSet[polId].insert(polarHJ);
 
-         ValErrPair norm = utils::CalcDivision(polarHJ, polarPC);
+         //ValErrPair norm = utils::CalcDivision(polarHJ, polarPC);
+         ValErrPair norm = utils::CalcDivisionPhase(polarHJ, polarPC, phasePC);
          fNormJetCarbon2[polId] = utils::CalcWeightedAvrgErr(fNormJetCarbon2[polId], norm);
 
          // for debugging
-         //cout << "jjjj " << fillId << " ";
+         //cout << "Normalization for fill " << fillId << " ";
          //cout << ": " << PairAsPhpArray(norm) << "      " << PairAsPhpArray(fNormJetCarbon2[polId]) << endl;
          //printf("%d: %s: %16.7f +/- %16.7f   %16.7f +/- %16.7f\n",
          //   fillId, sPolId.c_str(), polarPC.first, polarPC.second, polarHJ.first, polarHJ.second);

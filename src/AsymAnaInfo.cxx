@@ -145,6 +145,8 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
       {"disable-det",         required_argument,   0,   AsymAnaInfo::OPTION_DET_DISABLE},
       {"alpha-sources",       required_argument,   0,   AsymAnaInfo::OPTION_ALPHA_SOURCES},
       {"ac-dipole-period",    required_argument,   0,   AsymAnaInfo::OPTION_AC_DIPOLE_PERIOD},
+      {"spin-pattern",    required_argument,   0,   'x'},
+      {"fill-pattern",    required_argument,   0,   'p'},
       {0, 0, 0, 0}
    };
 
@@ -322,6 +324,12 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
      //
       case AsymAnaInfo::MODE_NO_GAIN_CORRECTION:
          fAsymModes |= AsymAnaInfo::MODE_NO_GAIN_CORRECTION;
+         break;
+      case 'x':
+         ::Flag.spin_pattern = atoi(optarg);
+         break;
+      case 'p':
+         ::Flag.fill_pattern = atoi(optarg);
          break;
 
       default:

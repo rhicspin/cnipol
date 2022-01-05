@@ -137,6 +137,7 @@ void AnaFillExternResult::LoadInfo(UInt_t fillId)
    opencdev::result_t bc_result;
    log_reader.query_fill("RHIC/Polarimeter/Blue/biasReadbacks", fillId, &bc_result);
    log_reader.query_fill("RHIC/Polarimeter/Yellow/biasReadbacks", fillId, &bc_result);
+   //Printf("bias readbacks");
    for(opencdev::result_t::const_iterator it = bc_result.begin(); it != bc_result.end(); it++)
    {
       const string &key = it->first;
@@ -144,6 +145,8 @@ void AnaFillExternResult::LoadInfo(UInt_t fillId)
 
       EPolarimeterId polId = BiasCurrentUtil::ParseLoggerPolId(key);
       TGraphErrors *gr = MakeGraph(values);
+      //Printf("Bias Current Graph %s", key.c_str());
+      //gr->Print();//zchang debug
       fBCCurGraph[polId].push_back(gr);
    }
 

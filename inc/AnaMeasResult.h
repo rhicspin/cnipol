@@ -77,6 +77,7 @@ public:
    time_t     GetStartTime() const { return fStartTime; }
    void       SetStartTime(time_t time) { fStartTime = time; }
 
+   ValErrPair GetPCPolarX90() const; //polarization from 90 degree detectors zchang
    ValErrPair GetPCPolar() const;
    ValErrPair GetPCPolarPhase() const;
    ValErrPair GetPCProfR() const;

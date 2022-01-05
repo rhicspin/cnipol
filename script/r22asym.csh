@@ -15,11 +15,11 @@ source /star/u/zchang/.login
 
 source /star/u/zchang/run22/cnipol/script/r22setup.csh 22 > /dev/null
 
-set MY_REMOTE_HOME_DIR=/home/cfsd/zchang
+setenv MY_REMOTE_HOME_DIR /home/cfsd/zchang
+setenv CNIPOL_ONLINE_DIR /gpfs02/eic/eichome/cnipol/root
 
 set CNIPOL_REMOTE_BLUE_DATA_DIR=/home/blue/20$RUN_ID/data
 set CNIPOL_REMOTE_YELLOW_DATA_DIR=/home/yellow/20$RUN_ID/data
-set CNIPOL_ONLINE_DIR=/gpfs02/eic/eichome/cnipol/root
 set RUNLIST=/gpfs02/eic/cnipol/runXX/lists/run${RUN_ID}_all
 
 #echo PATH=$PATH
@@ -46,28 +46,25 @@ set file_list=`echo -n ${blue_file_list}${yellow_file_list} | grep -oP '\S*.data
 if ("$file_list" != "") then
 	echo Processing following files:
 	echo "$file_list"
+        @ counter = 0
 	foreach file ($file_list)
         	echo $file >> ${RUNLIST}
         	set run_name=`echo $file | grep -oP "\S*(?=.data)"`
-		set args="--update-db -g -r $run_name"
-        	if ( $run_name =~ *alpha0* ) then
-            		set args="--alpha $args"
-                else
-            		set args="$args"
-        	endif
-		echo $CNIPOL_DIR/build/asym $args 
-		$CNIPOL_DIR/build/asym $args
-		#rsync -av --exclude='*.root' ${CNIPOL_RESULTS_DIR}/${run_name} ${CNIPOL_ONLINE_DIR} > /dev/null
- 		mkdir -p ${CNIPOL_ONLINE_DIR}/${run_name}/images
-	        cp -rf ${CNIPOL_RESULTS_DIR}/${run_name}/images ${CNIPOL_ONLINE_DIR}/${run_name}/. > /dev/null
-	        cp ${CNIPOL_RESULTS_DIR}/${run_name}/stdoe.log ${CNIPOL_ONLINE_DIR}/${run_name} > /dev/null
-	        cp ${CNIPOL_RESULTS_DIR}/${run_name}/config_calib.dat ${CNIPOL_ONLINE_DIR}/${run_name} > /dev/null
-	        cp ${CNIPOL_RESULTS_DIR}/${run_name}/runconfig.php ${CNIPOL_ONLINE_DIR}/${run_name} > /dev/null
+                if ($counter == 4) then
+		   wait
+                   @ counter = 0
+                 endif
+		 /usr/bin/nohup  /star/u/zchang/run22/cnipol/script/runpc.csh ${run_name} >& /dev/null &
+		#/star/u/zchang/run22/cnipol/script/runpc.csh ${run_name} >& /dev/null
+                @ counter += 1
 	end
 	cat ${RUNLIST} | sort | uniq > ${RUNLIST}.bak
 	mv ${RUNLIST}.bak ${RUNLIST}
 endif
 
+wait
+#/star/u/zchang/run22/cnipol/script/mAsymR22.csh
+#/star/u/zchang/run22/cnipol/script/mAlphaR22.csh
 rm ${MY_HOME_DIR}/ASYMLOCK
 #sleep ${CHECKINGPERIOD}
 

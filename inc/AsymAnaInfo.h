@@ -55,7 +55,6 @@ public:
    std::string      fAlphaCalibRun;     // Name of alpha calib run
    FILE            *fFileRunConf;       //!
    uint32_t         fAcDipolePeriod;    //! AC dipole magnet period in revolutions
-
 public:
 
    AsymAnaInfo();

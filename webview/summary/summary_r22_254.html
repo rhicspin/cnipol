@@ -29,13 +29,13 @@ include_once("../rundb/PlotHelper.php");
 //$dbFillPolar = new DbFillPolar();
 //$nFills = $dbFillPolar->CountEntries();
 
-$dir = "../runs/{$_GET['ana']}/images/";
+$dir = "../runs/{$_GET['anar22b']}/images/";
 $gP = new PlotHelper($dir);
 
 //$flattopEnergy = sprintf("%03d", 24);
 //$flattopEnergy = sprintf("%03d", 100);
 //$ai['fBeamEnergies'] = $_GET['es'];
-$flattopEnergy = sprintf("%03d", 255);
+$flattopEnergy = sprintf("%03d", 254);
 
 ?>
 
@@ -65,6 +65,7 @@ $flattopEnergy = sprintf("%03d", 255);
 <?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
+   if ($energy == $BEAM_ENERGY_255) continue;
    $strEnergy = sprintf("%03d", $energy);
 ?>
 
@@ -101,6 +102,7 @@ foreach ($ai['fBeamEnergies'] as $energy):
 <?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
+   if ($energy == $BEAM_ENERGY_255) continue;
    $strEnergy = sprintf("%03d", $energy);
 ?>
 
@@ -145,7 +147,8 @@ foreach ($ai['fBeamEnergies'] as $energy):
 
 <?php
 foreach ($ai['fBeamEnergies'] as $energy):
-   //if ($energy == $BEAM_ENERGY_INJ) continue;
+   if ($energy == $BEAM_ENERGY_INJ) continue;
+   if ($energy == $BEAM_ENERGY_255) continue;
    $strEnergy = sprintf("%03d", $energy);
 ?>
 
@@ -155,17 +158,17 @@ foreach ($ai['fBeamEnergies'] as $energy):
 <table class="simple00 cntr">
 
 <tr>
-   <td><?=$gP->img("runs/B1U/hPolarVsFill_B1U_$strEnergy", false, 800)?>
+   <td><?=$gP->img("runs/B1U/hPolarPCVsFill_B1U_$strEnergy", false, 800)?>
    <div class='thumbcaption_cm'><span class=bluPol>B1U</span></div>
 
-   <td><?=$gP->img("runs/Y2U/hPolarVsFill_Y2U_$strEnergy", false, 800)?>
+   <td><?=$gP->img("runs/Y2U/hPolarPCVsFill_Y2U_$strEnergy", false, 800)?>
    <div class='thumbcaption_cm'><span class=yelPol>Y2U</span></div>
 
 <tr>
-   <td><?=$gP->img("runs/B2D/hPolarVsFill_B2D_$strEnergy", false, 800)?>
+   <td><?=$gP->img("runs/B2D/hPolarPCVsFill_B2D_$strEnergy", false, 800)?>
    <div class='thumbcaption_cm'><span class=bluPol>B2D</span></div>
 
-   <td><?=$gP->img("runs/Y1D/hPolarVsFill_Y1D_$strEnergy", false, 800)?>
+   <td><?=$gP->img("runs/Y1D/hPolarPCVsFill_Y1D_$strEnergy", false, 800)?>
    <div class='thumbcaption_cm'><span class=yelPol>Y1D</span></div>
 
 <tr>
@@ -180,7 +183,7 @@ polarimeters. <b>The values are unscaled</b>. The analyzing power (P =
 
 </div>
 <!-- }}} -->
-<!-->
+
 
 
 <h2 id="pcarbon_hjet_ratio" class=count>H-Jet/p-Carbon Polarization Ratio</h2>
@@ -190,6 +193,7 @@ polarimeters. <b>The values are unscaled</b>. The analyzing power (P =
 <?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
+   if ($energy == $BEAM_ENERGY_255) continue;
    $strEnergy = sprintf("%03d", $energy);
 ?>
 
@@ -232,6 +236,7 @@ foreach ($ai['fBeamEnergies'] as $energy):
 <?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
+   if ($energy == $BEAM_ENERGY_255) continue;
    $strEnergy = sprintf("%03d", $energy);
 ?>
 
@@ -274,6 +279,7 @@ H-jet/p-Carbon polarization ratio by target.
 <?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
+   if ($energy == $BEAM_ENERGY_255) continue;
    $strEnergy = sprintf("%03d", $energy);
 ?>
 
@@ -317,6 +323,7 @@ polarimeters. The normalization to the H-jet results is applied</div>
 <?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
+   if ($energy == $BEAM_ENERGY_255) continue;
    $strEnergy = sprintf("%03d", $energy);
 ?>
 
@@ -361,6 +368,7 @@ Ratio of H-Jet/scaled p-Carbon polarization
 <?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
+   if ($energy == $BEAM_ENERGY_255) continue;
    $strEnergy = sprintf("%03d", $energy);
 ?>
 
@@ -440,6 +448,7 @@ Polarizations in AGS before injection into the RHIC:
 <?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
+   if ($energy == $BEAM_ENERGY_255) continue;
    $strEnergy = sprintf("%03d", $energy);
 ?>
 
@@ -488,6 +497,7 @@ Ratio ("after"/"before") of polarization measured before and after the energy ra
 <?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
+   if ($energy == $BEAM_ENERGY_255) continue;
    $strEnergy = sprintf("%03d", $energy);
 ?>
 
@@ -538,6 +548,8 @@ ramp <b>at flattop energy only</b>
 
 <?php
 foreach ($ai['fBeamEnergies'] as $energy):
+   if ($energy == $BEAM_ENERGY_INJ) continue;
+   if ($energy == $BEAM_ENERGY_255) continue;
    $strEnergy = sprintf("%03d", $energy);
 ?>
 
@@ -611,6 +623,7 @@ Fill average polarization profile values
 <?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
+   if ($energy == $BEAM_ENERGY_255) continue;
    $strEnergy = sprintf("%03d", $energy);
 ?>
 
@@ -656,6 +669,7 @@ Polarization profile "decay" per hour
 <?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
+   if ($energy == $BEAM_ENERGY_255) continue;
    $strEnergy = sprintf("%03d", $energy);
 ?>
 
@@ -701,6 +715,7 @@ Polarization decay in absolute % per hour
 <?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
+   if ($energy == $BEAM_ENERGY_255) continue;
    $strEnergy = sprintf("%03d", $energy);
 ?>
 
@@ -738,6 +753,49 @@ dR/dt vs dP/dt
 
 
 
+<h2 id="pcarbon_polar" class=count>Polarization by p-Carbon</h2>
+<!-- {{{ -->
+<div id="div:pcarbon_polar" class="section">
+
+
+<?php
+foreach ($ai['fBeamEnergies'] as $energy):
+   if ($energy == $BEAM_ENERGY_255) continue;
+   $strEnergy = sprintf("%03d", $energy);
+?>
+
+<h3 id="pcarbon_polar_<?=$strEnergy?>" class=count><?=$energy?> GeV</h3>
+
+<p>
+<table class="simple00 cntr">
+
+<tr>
+   <td><?=$gP->img("runs/B1U/hPolarVsMeas_B1U_$strEnergy", false, 800)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B1U</span></div>
+
+   <td><?=$gP->img("runs/Y2U/hPolarVsMeas_Y2U_$strEnergy", false, 800)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y2U</span></div>
+
+<tr>
+   <td><?=$gP->img("runs/B2D/hPolarVsMeas_B2D_$strEnergy", false, 800)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B2D</span></div>
+
+   <td><?=$gP->img("runs/Y1D/hPolarVsMeas_Y1D_$strEnergy", false, 800)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y1D</span></div>
+
+<tr>
+<td colspan=2>
+<div class='thumbcaption'>
+Average polarization
+</div>
+
+</table>
+
+<?php endforeach; ?>
+<!-- }}} -->
+
+</div>
+
 <h2 id="pcarbon_angle" class=count>Spin Angle (Radial Component) by p-Carbon</h2>
 <!-- {{{ -->
 <div id="div:pcarbon_angle" class="section">
@@ -745,6 +803,7 @@ dR/dt vs dP/dt
 
 <?php
 foreach ($ai['fBeamEnergies'] as $energy):
+   if ($energy == $BEAM_ENERGY_255) continue;
    $strEnergy = sprintf("%03d", $energy);
 ?>
 
@@ -778,6 +837,7 @@ Average spin angle (i.e. radial component)
 <?php endforeach; ?>
 
 </div>
+
 <!-- }}} -->
 
 
@@ -787,6 +847,7 @@ Average spin angle (i.e. radial component)
 
 <?php
 foreach ($ai['fBeamEnergies'] as $energy):
+   if ($energy == $BEAM_ENERGY_255) continue;
    $strEnergy = sprintf("%03d", $energy);
 ?>
 
@@ -826,6 +887,7 @@ t0 calibration parameter averaged over all channels and all measurements in a fi
 
 <?php
 foreach ($ai['fBeamEnergies'] as $energy):
+   if ($energy == $BEAM_ENERGY_255) continue;
    $strEnergy = sprintf("%03d", $energy);
 ?>
 
@@ -866,6 +928,7 @@ measurements in a fill
 
 <?php
 foreach ($ai['fBeamEnergies'] as $energy):
+   if ($energy == $BEAM_ENERGY_255) continue;
    $strEnergy = sprintf("%03d", $energy);
 ?>
 
@@ -907,6 +970,7 @@ Target used in the fill
 <?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
+   if ($energy == $BEAM_ENERGY_255) continue;
    $strEnergy = sprintf("%03d", $energy);
 ?>
 
@@ -945,6 +1009,7 @@ with only "down" spin polarization
 <?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
+   if ($energy == $BEAM_ENERGY_255) continue;
    $strEnergy = sprintf("%03d", $energy);
 ?>
 
@@ -988,6 +1053,7 @@ with only "down" spin polarization
 <?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
+   if ($energy == $BEAM_ENERGY_255) continue;
    $strEnergy = sprintf("%03d", $energy);
 ?>
 

@@ -40,6 +40,8 @@ protected:
    PolId2TGraphMap            fPCPolarInjGraphs;       // polarization measurements at 24 GeV by polarimeter
    PolId2TgtOrient2TGraphMap  fPCProfRGraphs;
    PolId2TgtOrient2TGraphMap  fPCProfRInjGraphs;       //!
+   PolId2TGraphMap            fPCPolarPhaseGraphs;          // spin tilt at flattop
+   PolId2TGraphMap            fPCPolarPhaseInjGraphs;       // spin tilt at 24 GeV by polarimeter
    PolId2TargetUIdMap         fPCTargets;
 
    TFitResultPtr              fPCPolarFitRes;
@@ -57,6 +59,7 @@ public:
 
    PolId2ValErrMap               fPCPolars;          // (Nominal) intensity weighted polarization measurement results
    PolId2ValErrMap               fPCPolarUnWs;       // The same as fPCPolars but not weighted with intensity
+   PolId2ValErrMap               fPCPolarPhases;          // average spin tilt angle
    PolId2TgtOrient2ValErrMap     fPCProfRs;          //!
    //PolId2TgtOrient2ValErrMap     fPCProfRInjs;       //!
    TargetUId2ValErrMap           fPCPolarsByTargets;
@@ -122,6 +125,7 @@ public:
    Bool_t               IsValidFlattopMeas(const MeasInfo &measInfo);
    ValErrPair           GetPCPolar(EPolarimeterId polId, PolId2ValErrMap *normJC=0) const;
    ValErrPair           GetPCPolarUnW(EPolarimeterId polId, PolId2ValErrMap *normJC=0) const;
+   ValErrPair           GetPCPolarPhase(EPolarimeterId polId) const;
    TGraphErrors*        GetPCPolarGraph(EPolarimeterId polId) const;
    TGraphErrors*        GetPCPolarInjGraph(EPolarimeterId polId);
    ValErrPair           GetPCPolarP0(EPolarimeterId polId) const;
@@ -155,6 +159,7 @@ public:
    PolId2ValErrMap      CalcSystProfPolar(PolId2ValErrMap &normPP);
    ValErrPair           CalcAvrgPolar(EPolarimeterId polId);
    ValErrPair           CalcAvrgPolarUnweighted(EPolarimeterId polId);
+   ValErrPair           CalcAvrgPolarPhase(EPolarimeterId polId);
    ValErrPair           CalcAvrgPolProfPolar(EPolarimeterId polId);
    //ValErrPair           CalcAvrgProfRInj(EPolarimeterId polid, ETargetOrient tgtOrient);
    ValErrPair           CalcAvrgProfR(EPolarimeterId polid, ETargetOrient tgtOrient);
@@ -175,6 +180,11 @@ public:
    void                 AppendToPCPolarInjGraph(EPolarimeterId polId, Double_t x, Double_t y, Double_t xe, Double_t ye);
    void                 AppendToPCProfRGraph(EPolarimeterId polId, ETargetOrient tgtOrient, Double_t x, Double_t y, Double_t xe, Double_t ye);
    void                 AppendToPCProfRInjGraph(EPolarimeterId polId, ETargetOrient tgtOrient, Double_t x, Double_t y, Double_t xe, Double_t ye);
+   //
+   TGraphErrors*        GetPCPolarPhaseGraph(EPolarimeterId polId) const;
+   TGraphErrors*        GetPCPolarPhaseInjGraph(EPolarimeterId polId);
+   void                 AppendToPCPolarPhaseGraph(EPolarimeterId polId, Double_t x, Double_t y, Double_t xe, Double_t ye);
+   void                 AppendToPCPolarPhaseInjGraph(EPolarimeterId polId, Double_t x, Double_t y, Double_t xe, Double_t ye);
 
    ClassDef(AnaFillResult, 1)
 };

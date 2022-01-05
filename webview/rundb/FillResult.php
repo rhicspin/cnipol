@@ -114,6 +114,8 @@ class FillResult
          else
             $this->fPCPolarSlopes[$polId] = new pair($row['polar_slope'], $row['polar_slope_err']);
 
+	    //printf("%d %f %f %f \n",$this->fFillId, $row['polar'], $row['polar_p0'], $row['polar_slope']);
+
          //$this->fPCProfRs[$polId]      = new pair($row['prof_r'], $row['prof_r_err']);
          //print "<br>{$this->fFillId}<br>$polId: ".print_r($this->fPCPolars[$polId]);
          //}

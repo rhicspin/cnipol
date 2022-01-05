@@ -60,6 +60,7 @@ void MAsymBiasHists::Fill(const EventConfig &rc)
       if (std::isnan(bc[det])) continue;
 
       int nPoints = g->GetN();
+      //Info("Fill", "npoints=%d det %d bc %lg", nPoints, det, bc[det]);
       g->SetPoint(nPoints, runId, bc[det]);
       g->SetPointError(nPoints, 0.0, 0.0);
    }
@@ -85,8 +86,8 @@ void MAsymBiasHists::UpdateLimits()
          TGraphErrors *g = grBiasCurrent[*iPolId][det];
 
          g->ComputeRange(xmin, ymin, xmax, ymax);
-         h->GetXaxis()->SetLimits(xmin, xmax);
-         h->GetYaxis()->SetLimits(-55., 55.);
+         h->GetXaxis()->SetLimits(xmin-0.5, xmax+0.5);
+         h->GetYaxis()->SetLimits(-25., 15.);
       }
    }
 }
