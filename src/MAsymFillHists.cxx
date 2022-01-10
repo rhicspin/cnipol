@@ -631,7 +631,7 @@ void MAsymFillHists::PostFill(AnaGlobResult &agr)
          }
 
          ValErrPair agsPol = afr.GetAgsCniPolar();
-         Info("PostFill", "AGS polar %lg+/-%lg", agsPol.first, agsPol.second);
+         Printf("AGS polar %lg+/-%lg", agsPol.first, agsPol.second);
          if (agsPol.second >= 0)
          {
             utils::AppendToGraph(grAgsPolarVsFillId, fillId, agsPol.first, 0, agsPol.second);

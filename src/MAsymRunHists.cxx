@@ -1591,7 +1591,7 @@ void MAsymRunHists::PostFillByPolarimeter(AnaGlobResult &agr, AnaFillResultMapIt
 
    if (afr.fPCPolars.find(polId) == afr.fPCPolars.end()) return;
    //Info("PostFill", "flattop: %lg beam=%d", afr.GetFlattopEnergy(), beamE);
-   if ((UInt_t) afr.GetFlattopEnergy() != beamE) return; //zchang match energy
+   if ((UInt_t) afr.GetFlattopEnergy() != beamE  && beamE != kINJECTION) return; //zchang match energy
    //if (afr.fProfPCPolars.find(polId) == afr.fProfPCPolars.end()) continue;
 
    string sPolId = RunConfig::AsString(polId);
@@ -1745,7 +1745,7 @@ void MAsymRunHists::PostFillByRing(AnaGlobResult &agr, AnaFillResultMapIter iafr
    UInt_t fillId     = iafr->first;
    AnaFillResult afr = iafr->second;
 
-   if ((UInt_t) afr.GetFlattopEnergy() != beamE) return; //zchang match energy
+   if ((UInt_t) afr.GetFlattopEnergy() != beamE && beamE != kINJECTION) return; //zchang match energy
 
    string sRingId = RunConfig::AsString(ringId);
    string sBeamE  = RunConfig::AsString(beamE);

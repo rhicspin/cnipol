@@ -481,7 +481,7 @@ void MeasInfo::Update(const MseMeasInfoX& run)
       gCh2WfdMap = ch2WfdMap_run11;
    } else if(RUNID >= 31000){
       fRunId = 22;
-      gCh2WfdMap = ch2WfdMap_run13;
+      gCh2WfdMap = ch2WfdMap_run11;
    } else {
       // default Run value
    }

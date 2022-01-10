@@ -286,6 +286,7 @@ void AnaFillResult::AddMeasResult(EventConfig &mm)
 
    //Info("AddMeasResult", "fStartTime %d (meas)", mm.fMeasInfo->fStartTime);
    //Info("AddMeasResult", "fStartTime %d", GetStartTime());
+   //Printf("AddMeasResult fStartTime %ld", GetStartTime());
 
    // add or overwrite new AnaFillResult
    fAnaMeasResults[runName] = *mm.fAnaMeasResult;
@@ -1517,7 +1518,8 @@ void AnaFillResult::UpdateExternGraphRange()
       for(vector<TGraphErrors*>::const_iterator it = grs.begin(); it != grs.end(); it++)
       {
          TGraphErrors *gr = *it;
-         for (Int_t i=0; i<gr->GetN(); ++i) { gr->GetPoint(i, x, y); gr->SetPoint(i, x - fStartTime, y); }
+         for (Int_t i=0; i<gr->GetN(); ++i) { gr->GetPoint(i, x, y); gr->SetPoint(i, x - fStartTime, y); //if(i==0) Printf("time diff: %.0lf start: %ld bc: %lf", x-fStartTime, fStartTime, y);
+}
       }
    }
 
@@ -1525,7 +1527,8 @@ void AnaFillResult::UpdateExternGraphRange()
       Double_t x, y;
       TGraphErrors *gr = GetAgsPolFitGraph();
       if (gr) {
-         for (Int_t i=0; i<gr->GetN(); ++i) { gr->GetPoint(i, x, y); gr->SetPoint(i, x - fStartTime, y); }
+         for (Int_t i=0; i<gr->GetN(); ++i) { gr->GetPoint(i, x, y); gr->SetPoint(i, x - fStartTime, y); //Printf("time diff: %.0lf pol: %lf", x-fStartTime, y);
+}
       }
    }
 
@@ -1731,7 +1734,8 @@ void AnaFillResult::FitAgsPol()
 {
    TGraphErrors *gr = GetAgsPolFitGraph();
    if (gr) {
-      fAgsPolFitRes = gr->Fit("pol0", "QS", "", -0.5 * 60 * 60, 0); // Q - Quiet, S - return FitResult
+      //fAgsPolFitRes = gr->Fit("pol0", "QS", "", -0.5 * 60 * 60, 0); // Q - Quiet, S - return FitResult
+      fAgsPolFitRes = gr->Fit("pol0", "QS",""); // Q - Quiet, S - return FitResult
    }
 }
 

@@ -13,10 +13,13 @@ source /star/u/zchang/run22/cnipol/script/r22setup.csh 22 > /dev/null
 setenv CNIPOL_ONLINE_DIR /gpfs02/eic/eichome/cnipol/root
 #exec /star/u/zchang/run22/cnipol/script/runAsymR22.sh
 
-set fill=32923
+#set fill=32923
 #set names = ("304" "305" "306" "307" "308" "309" "310" "311" "312" "313" "314" "315" "316" "317")
-set names = ("005" "205" "206")
-set opt="--spin-pattern 13 --fill-pattern 1"
+#set names = ("005" "205" "206")
+set fill=32960
+set names = ("204" "005" "104")
+set opt=""
+#set opt="--spin-pattern 13 --fill-pattern 1"
 #set names = ("305" "304" "105")
 #set opt="--spin-pattern 3 --fill-pattern 1"
 @ cntr=0
