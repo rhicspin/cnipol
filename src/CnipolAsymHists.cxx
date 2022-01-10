@@ -8,6 +8,11 @@
 #include "MeasInfo.h"
 
 #include "CnipolHists.h"
+#include "TMath.h"
+
+#include "AfterBurner.h"
+
+using namespace afterburner;
 
 ClassImp(CnipolAsymHists)
 
@@ -233,6 +238,21 @@ void CnipolAsymHists::BookHists()
       ((TH1*) o[shName])->SetTitle("; Time, s; Detector Id;");
       ((TH1*) o[shName])->SetOption("colz NOIMG");
    }
+
+   TGraphErrors *gNdetasym_lam = new TGraphErrors();
+   gNdetasym_lam->SetName("gNdetasym_lam");
+   gNdetasym_lam->SetMarkerStyle(20);
+   gNdetasym_lam->SetMarkerSize(1);
+   gNdetasym_lam->SetMarkerColor(2);
+   gNdetasym_lam->SetLineColor(2);
+
+   shName = "hNdetasym_lam";
+   hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0., 2*M_PI, 1, -0.012, 0.012);
+   hist->SetTitle("; #phi; Asymmetry;");
+   hist->SetOption("DUMMY GRIDX");
+   hist->GetListOfFunctions()->Add(gNdetasym_lam, "p");
+   o[shName] = hist;
+   //
 }
 
 
@@ -270,7 +290,6 @@ void CnipolAsymHists::Fill(ChannelEvent *ch)
    Double_t time     = ((Double_t) ch->GetRevolutionId())/RHIC_REVOLUTION_FREQ;
 
    string sSS = gRunConfig.AsString( gMeasInfo->GetBunchSpin(bId) );
-
    ((TH1*) o.find("hChVsBunchId_"    + sSS)->second) -> Fill(bId, chId);
    ((TH1*) o.find("hChVsKinEnergyA_" + sSS)->second) -> Fill(kinEnergy, chId);
    ((TH1*) o.find("hChVsDelim_"      + sSS)->second) -> Fill(time, chId);
@@ -466,4 +485,49 @@ void CnipolAsymHists::PostFill()
       gAnaMeasResult->fFitResAsymBunchY45[*iSS] = fitres;
       delete funcConst;
    }
+   AfterBurner();
+}
+
+/** */
+void CnipolAsymHists::AfterBurner()
+{
+  TH2I* hDetVsDelim_up = (TH2I*) o["hDetVsDelim_up"];
+  TH2I* hDetVsDelim_down = (TH2I*) o["hDetVsDelim_down"];
+  if (!hDetVsDelim_up) {return;}
+  if (!hDetVsDelim_down) {return;}
+
+  TH1D* hCountsUp = hDetVsDelim_up->ProjectionY("hCountsUp");
+  TH1D* hCountsDn = hDetVsDelim_down->ProjectionY("hCountsDn");
+
+  double nup[6], ndn[6];
+  for (int i=0; i<6; i++) {
+    nup[i] = hCountsUp->GetBinContent(i+1);
+    ndn[i] = hCountsDn->GetBinContent(i+1);
+    //Info("AfterBurner", "i=%d nup=%lg ndn=%lg", i, nup[i], ndn[i]);
+  }
+  Info("AfterBurner", "fitting...");
+  double par[3], epar[3], chi2;
+  fit1asym(nup,ndn,par,epar,chi2);
+  
+  TF1* fNdetasym_lam = new TF1("fNdetasym_lam","[0]*sin(x-[1])+0.*[2]",0.,2*M_PI);
+  fNdetasym_lam->SetParameters(par); fNdetasym_lam->SetParErrors(epar);
+  fNdetasym_lam->SetParNames("#epsilon_{0}","#phi_{0}","#lambda");
+  Info("AfterBurner", "filling fit points");
+  double phidet[6] = { 45. , 90. , 135. , 225. , 270. , 315. };
+  TH1 *hNdetasym_lam = (TH1 *) o["hNdetasym_lam"];
+  TGraphErrors* gNdetasym_lam = (TGraphErrors *) hNdetasym_lam->GetListOfFunctions()->FindObject("gNdetasym_lam");
+  int npfit = 0;
+  for (int i=0; i<6; i++) {
+    if ( nup[i]>0. && ndn[i]>0. ) { // require hits in detector
+      pair<double,double> asympair = asym_err(par[2],nup[i],ndn[i]);
+      gNdetasym_lam->SetPoint(npfit,TMath::DegToRad()*phidet[i],asympair.first);
+      gNdetasym_lam->SetPointError(npfit,0.,asympair.second);
+      npfit++;
+    }
+  }
+  
+  fNdetasym_lam->SetChisquare(chi2); 
+  fNdetasym_lam->SetNDF(npfit-3);
+  gNdetasym_lam->GetListOfFunctions()->Add(fNdetasym_lam);
+  Info("AfterBurner", "Done chi2/ndf = %lg/%d", chi2, npfit-3);
 }

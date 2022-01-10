@@ -64,8 +64,10 @@ void AnaFillExternResult::LoadAgsInfo(opencdev::LogReader &log_reader)
 
    log_reader.query_timerange("Ags/Polarized_protons/CNIpolarimeter", ags_time_start, ags_time_end, &ags_pol_result);
 
+
    {
       std::map<opencdev::cdev_time_t, double> &values = ags_pol_result["start"];
+      //Printf("ags size: %d", values.size());
       fAgsPolFitGraph = new TGraphErrors(values.size());
       int i = 0;
 
@@ -73,11 +75,41 @@ void AnaFillExternResult::LoadAgsInfo(opencdev::LogReader &log_reader)
        {
           opencdev::cdev_time_t time = it->first;
           double startTime = it->second;
-
+          Printf("time: %.0lf start: %.0lf pol: %lf", time, startTime, ags_pol_result["AgsPolarFit"][time]);
           fAgsPolFitGraph->SetPoint(i, (startTime + time) / 2, ags_pol_result["AgsPolarFit"][time]);
           fAgsPolFitGraph->SetPointError(i, fabs(startTime - time) / 2, ags_pol_result["AgsPolarFitErr"][time]);
+          //fAgsPolFitGraph->SetPoint(i, time, ags_pol_result["AgsPolarFit"][time]);
+          //fAgsPolFitGraph->SetPointError(i, 0, ags_pol_result["AgsPolarFitErr"][time]);
           i++;
        }
+       //fAgsPolFitGraph->Print();
+   }
+}
+
+void AnaFillExternResult::LoadAgsInfo(opencdev::LogReader &log_reader, int fillId)
+{
+   opencdev::result_t ags_pol_result;
+
+   log_reader.query_fill("RHIC/Analysis/FDAImport/FDAcombined", fillId, &ags_pol_result);
+
+   {
+        const map<opencdev::cdev_time_t, double> &values = ags_pol_result["agsPolT1"];
+        const map<opencdev::cdev_time_t, double> &errors = ags_pol_result["agsPolT1Err"];
+        fAgsPolFitGraph = new TGraphErrors(values.size());
+        int i = 0;
+        std::map<opencdev::cdev_time_t, double>::const_iterator ie = errors.begin();
+        for(std::map<opencdev::cdev_time_t, double>::const_iterator it = values.begin(); it != values.end(); it++)
+         {
+            opencdev::cdev_time_t time = it->first;
+            double pol = it->second;
+            opencdev::cdev_time_t time_e = ie->first;
+            double polerr = ie->second;
+            Printf("Loading AGS polarization: %.0lf(%.0lf) pol: %lg +/- %lg", time, time_e, pol, polerr);
+          fAgsPolFitGraph->SetPoint(i, (time + time_e) / 2, pol);
+          fAgsPolFitGraph->SetPointError(i, fabs(time - time_e) / 2, polerr);
+          i++;ie++;
+       }
+       //fAgsPolFitGraph->Print();
    }
 }
 
@@ -137,6 +169,7 @@ void AnaFillExternResult::LoadInfo(UInt_t fillId)
    opencdev::result_t bc_result;
    log_reader.query_fill("RHIC/Polarimeter/Blue/biasReadbacks", fillId, &bc_result);
    log_reader.query_fill("RHIC/Polarimeter/Yellow/biasReadbacks", fillId, &bc_result);
+   //Printf("bias readbacks");
    for(opencdev::result_t::const_iterator it = bc_result.begin(); it != bc_result.end(); it++)
    {
       const string &key = it->first;
@@ -144,11 +177,14 @@ void AnaFillExternResult::LoadInfo(UInt_t fillId)
 
       EPolarimeterId polId = BiasCurrentUtil::ParseLoggerPolId(key);
       TGraphErrors *gr = MakeGraph(values);
+      //Printf("Bias Current Graph %s", key.c_str());
+      //gr->Print();//zchang debug
       fBCCurGraph[polId].push_back(gr);
    }
-
+   //Printf("on: %ld off: %ld", fTimeEventLumiOn, fTimeEventLumiOff);
    if (fTimeEventLumiOn && fTimeEventLumiOff) {
-      LoadAgsInfo(log_reader);
+     LoadAgsInfo(log_reader, fillId);
+     //LoadAgsInfo(log_reader);
    }
 }
 

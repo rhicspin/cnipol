@@ -338,21 +338,25 @@ vector<MseMeasInfoX> AsymDbSql::SelectPriorRuns(const MseMeasInfoX& run)
 void AsymDbSql::UpdateInsert(const MseMeasInfoX* orun, const MseMeasInfoX* nrun)
 {
    OpenConnection();
-
+   Info("UpdateInsert", "Opening");
    if (!fConnection) {
       Error("UpdateInsert", "Connection with MySQL server not established");
       return;
    }
+   Info("UpdateInsert", "Querying");
 
    Query query = fConnection->query();
 
    // if original run is not defined just insert the new one
    if (!orun) {
+      Info("UpdateInsert", "Inserting");
+      //query.update(*nrun, *nrun);
       query.insert(*nrun);
       cout << "Query: " << query << endl;
       query.execute();
 
    } else {
+      Info("UpdateInsert", "Updating");
       query.update(*orun, *nrun);
       cout << "Query: " << query << endl;
       query.execute();

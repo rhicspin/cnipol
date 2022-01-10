@@ -220,6 +220,13 @@ Bool_t ChannelEvent::PassCutSiliconChannel()
    return false;
 }
 
+Bool_t ChannelEvent::PassCutSpinTuneChannel()
+{
+   if ( gMeasInfo->IsSpinTuneChannel(GetChannelId()) )
+      return true;
+
+   return false;
+}
 
 /** */
 Bool_t ChannelEvent::PassCutDepEnergyTime()
@@ -334,7 +341,28 @@ Bool_t ChannelEvent::PassCutNoise()
 
    return true;
 }
+/** */
+Bool_t ChannelEvent::PassCutNoiseLower()
+{
+   Double_t extraOffset = 0;
 
+   if ( gMeasInfo->GetBeamEnergy() != kINJECTION)
+      extraOffset = -8; // 8 TDC units ~= ? ns, 6 TDC units ~= 8 ns
+   //zchang
+   //Printf("cut width: %d\n", gMeasInfo->GetProtoCutWidth());
+   if ( //false 
+        //GetAmpltd() < gMeasInfo->GetProtoCutAdcMin() ||
+        //GetAmpltd() > gMeasInfo->GetProtoCutAdcMax() ||
+        //GetTdc() < gMeasInfo->GetProtoCutTdcMin() ||
+        //GetTdc() > gMeasInfo->GetProtoCutTdcMax() ||
+        GetTdc() - ( gMeasInfo->GetProtoCutSlope() * (GetAmpltd()-10) + gMeasInfo->GetProtoCutOffset() + extraOffset)  >
+           gMeasInfo->GetProtoCutWidth()*-1.0
+           //20.*-1.0
+      )
+      return false;
+
+   return true;
+}
 
 /** */
 Bool_t ChannelEvent::PassCutEnabledChannel()

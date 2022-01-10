@@ -17,7 +17,8 @@
 #include "ChannelEvent.h"
 #include "DrawObjContainer.h"
 #include "EventConfig.h"
-
+//zchang
+#include "SpinTuneMotor.h"
 
 class AsymAnaInfo;
 
@@ -28,7 +29,8 @@ enum ECut {
    kCUT_PMT,
    kCUT_CARBON_EB,
    kCUT_PASSTWO,
-   kCUT_PASSONE_STEPPER
+   kCUT_PASSONE_STEPPER,
+   kCUT_NOISE_LOWER //zchang
 };
 
 typedef std::map<ECut, std::set<DrawObjContainer*> >   Cut2DrawObjContainerMap;
@@ -55,6 +57,8 @@ public:
    ChannelData          *fChannelData;       //!
    ChannelEventSet       fChannelEvents;     //!
    EventConfig          *fEventConfig;       //!
+   //zchang
+   SpinTuneMotor        *fSpinTuneMotor;
    DrawObjContainer     *fHists;             //!
 
 public:
@@ -71,6 +75,8 @@ public:
    void         AddSpinFlipperMarker();
    void         ProcessEvent() {};
    void         FillPassOne(ECut cut);
+   //zchang
+   void         FillSpinTuneMotor();
    void         FillDerivedPassOne();
    void         PostFillPassOne();
    void         PreFill();
@@ -81,6 +87,7 @@ public:
    void         FillTargetHists(Int_t n, Double_t *hData);
    void         FillProfileHists(UInt_t n, Int_t *hData);
    void         FillRunHists();
+   //void         AfterBurner();
    void         AddChannelEvent();
    void         PrintEventMap();
    void         PrintChannelEvent();

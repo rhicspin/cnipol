@@ -23,7 +23,7 @@ string SshLogReader::GetSshCommand(const string &logger, const string &args)
    }
 
    snprintf(buf, sizeof(buf),
-            "ssh yellowpc \""
+            "ssh yellpc \""
             "setenv PATH /usr/controls/bin; setenv LD_LIBRARY_PATH /ride/release/X86/lib;"
             "exportLoggerData"
             " -logger '%s'"
@@ -279,3 +279,35 @@ void SshLogReader::get_fill_events(int fill_id, const string &ev_name, vector<op
       values->push_back(time);
    }
 }
+/*zchang*/
+/*
+void SshLogReader::query_timerange_mean(const std::string &logger, opencdev::cdev_time_t starttime, opencdev::cdev_time_t endtime, opencdev::mean_result_t *mean_result)
+{
+  opencdev::result_t result;
+  query_timerange(logger, starttime, endtime, &result);
+  calculate_mean(result, mean_result);
+}
+
+void SshLogReader::calculate_mean(const opencdev::result_t &result, opencdev::mean_result_t *mean_result) const
+{
+  for (opencdev::result_t::const_iterator it = result.begin(); it != result.end(); it++)
+    {
+      const std::string &key = it->first;
+      const std::map<opencdev::cdev_time_t, double> &m = it->second;
+      double mean = NAN;
+
+      if (m.size() != 0)
+	{
+	  mean = std::accumulate(m.begin(), m.end(), 0.0f, opencdev::val_add<opencdev::cdev_time_t, double>) / m.size();
+	}
+
+      (*mean_result)[key] = mean;
+    }
+}
+*/
+/*template<typename K, typename V>
+V SshLogReader::val_add(V sum, const std::pair<K, V> &p)
+{
+   return sum + p.second;
+}*/
+

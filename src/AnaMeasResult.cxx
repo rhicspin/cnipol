@@ -101,8 +101,15 @@ void AnaMeasResult::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fPmtS1T0']            = %f;\n",            fPmtS1T0);
    fprintf(f, "$rc['fPmtS1T0Err']         = %f;\n",            fPmtS1T0Err);
 }
-
-
+/** polarization from 90 degree detectors zchang*/
+ValErrPair AnaMeasResult::GetPCPolarX90() const
+{
+   ValErrPair val_err(0, -1);
+   ValErrPair asym = fAsymX90.at("phys");
+   val_err.first  = A_N[1] > 0 ? asym.first/A_N[1] : 0;
+   val_err.second = A_N[1] > 0 ? asym.second/A_N[1]: -1;
+   return val_err;
+}
 /** */
 ValErrPair AnaMeasResult::GetPCPolar() const
 {
@@ -154,6 +161,7 @@ ValErrPair AnaMeasResult::GetPCProfR() const
  * "New system" streamer with backward-compatibility to old files.
  * Implemented as suggested in https://root.cern.ch/root/SchemaEvolution.html
  */
+/*
 void AnaMeasResult::Streamer(TBuffer &R__b)
 {
    // Stream an object of class AnaMeasResult.
@@ -245,4 +253,4 @@ void AnaMeasResult::Streamer(TBuffer &R__b)
    } else {
       AnaMeasResult::Class()->WriteBuffer(R__b, this);
    }
-}
+}*/

@@ -334,6 +334,8 @@ void CnipolPreprocHists::FillDerivedPassOne_FillFromRawHists(CnipolRawHists *raw
 
             // Apply the "proto slope" cut
             if ( fabs( binTdc - ( gMeasInfo->GetProtoCutSlope() * binAdc + gMeasInfo->GetProtoCutOffset() + extraOffset) ) > 20 )
+	    //zchang noise test
+            //if ( binTdc - ( gMeasInfo->GetProtoCutSlope() * binAdc + gMeasInfo->GetProtoCutOffset() + extraOffset) > -20 )
                continue;
 
             //printf("binx, biny, slope, offset: %d, %d, %f, %f\n", binx, biny, gMeasInfo->GetProtoCutSlope(), gMeasInfo->GetProtoCutOffset());

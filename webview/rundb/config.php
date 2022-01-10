@@ -3,9 +3,9 @@
 include_once("Pair.php");
 
 
-define("DATA_DIR", "/home/cnipol/root");
-define("LOG_DIR",  "/home/cnipol/log");
-define("VIDEO_DIR",  "/home/cnipol/video");
+define("DATA_DIR", "/gpfs/mnt/gpfs02/eic/eichome/cnipol/root");
+//define("LOG_DIR",  "/home/cnipol/log");
+//define("VIDEO_DIR",  "/home/cnipol/video");
 
 // Approximate fill numbers
 $RUN_PERIOD_BY_FILL = array (
@@ -14,7 +14,8 @@ $RUN_PERIOD_BY_FILL = array (
    12 => array( "start" => 16000, "end" => 16800 ),
    13 => array( "start" => 17000, "end" => 18000 ),
    15 => array( "start" => 18000, "end" => 20000 ),
-   17 => array( "start" => 20000, "end" => 22000)
+   17 => array( "start" => 20000, "end" => 22000),
+   22 => array( "start" => 32000, "end" => 34000),
 );
 
 // Approximate dates
@@ -24,10 +25,11 @@ $RUN_PERIOD_BY_DATE = array (
    12 => array( "start" => "2011-11-01 00:00:00", "end" => "2012-06-01 00:00:00" ),
    13 => array( "start" => "2013-01-01 00:00:00", "end" => "2013-08-01 00:00:00" ),
    15 => array( "start" => "2015-01-01 00:00:00", "end" => "2015-08-01 00:00:00" ),
-   17 => array( "start" => "2017-01-01 00:00:00", "end" => "2017-08-01 00:00:00" )
+   17 => array( "start" => "2017-01-01 00:00:00", "end" => "2017-08-01 00:00:00" ),
+   22 => array( "start" => "2021-11-01 00:00:00", "end" => "2022-05-01 00:00:00" ),
 );
 
-$RUN_PERIOD        = array(9 => "Run 9", 11 => "Run 11", 12 => "Run 12", 13 => "Run 13", 15 => "Run 15", 17 => "Run 17");
+$RUN_PERIOD        = array(9 => "Run 9", 11 => "Run 11", 12 => "Run 12", 13 => "Run 13", 15 => "Run 15", 17 => "Run 17", 22 => "Run 22");
 $POLARIMETER_ID    = array(0 => "B1U", 1 => "Y1D", 2 => "B2D", 3 => "Y2U");
 $HJ_POLARIMETER_ID = 10;
 $AGS_POLARIMETER_ID = 11;
@@ -37,6 +39,7 @@ $MEASTYPE          = array(0x00 => "undef", 0x01 => "alpha", 0x02 => "sweep", 0x
 $FILLTYPE          = array(0x00 => "undef", 0x01 => "phys");
 $BEAM_ENERGY       = array("24" => "24", "100" => "100", "104" => "104","250" => "250", "255" => "255");
 $BEAM_ENERGY_INJ   = 24;
+$BEAM_ENERGY_254   = 254;
 $TARGET_ORIENT     = array("H" => "H", "V" => "V");
 //$TARGET_ORIENT_ID  = array(0 => "H", "V" => "V");
 $TARGET_ID         = array_combine(range(1, 6), range(1, 6));
@@ -185,6 +188,41 @@ $normHJPC[17][255]['Y2U']['H'][1] = new pair( 1.02950, 0.01150 );
 $normHJPC[17][255]['Y2U']['H'][2] = new pair( 1.03245, 0.01997 );
 $normHJPC[17][255]['Y2U']['H'][4] = new pair( 0.94707, 0.02233 );
 $normHJPC[17][255]['Y2U']['V'][1] = new pair( 1.02009, 0.00902 );
+//run-22 set to 1
+$normHJPC[22][24]['B1U']['nomi'] = new pair(   1.0,    -1.0);
+$normHJPC[22][24]['Y1D']['nomi'] = new pair(   1.0,    -1.0);
+$normHJPC[22][24]['B2D']['nomi'] = new pair(   1.0,    -1.0);
+$normHJPC[22][24]['Y2U']['nomi'] = new pair(   1.0,    -1.0);
+$normHJPC[22][255]['B1U']['nomi'] = new pair(  0.93,    0.04);
+$normHJPC[22][255]['Y1D']['nomi'] = new pair(  0.94,    0.03);
+$normHJPC[22][255]['B2D']['nomi'] = new pair(  0.96,    0.04);
+$normHJPC[22][255]['Y2U']['nomi'] = new pair(  1.00,    0.03);
+$normHJPC[22][255]['B1U']['H'][2] = new pair( 1.0, -1 );
+$normHJPC[22][255]['B1U']['H'][4] = new pair( 1.0, -1 );
+$normHJPC[22][255]['B1U']['H'][6] = new pair( 1.0, -1 );
+$normHJPC[22][255]['B1U']['V'][1] = new pair( 1.0, -1 );
+$normHJPC[22][255]['B1U']['V'][3] = new pair( 1.0, -1 );
+$normHJPC[22][255]['B1U']['V'][4] = new pair( 1.0, -1 );
+$normHJPC[22][255]['B1U']['V'][5] = new pair( 1.0, -1 );
+$normHJPC[22][255]['B1U']['V'][6] = new pair( 1.0, -1 );
+$normHJPC[22][255]['Y1D']['H'][1] = new pair( 1.0, -1 );
+$normHJPC[22][255]['Y1D']['H'][2] = new pair( 1.0, -1 );
+$normHJPC[22][255]['Y1D']['H'][3] = new pair( 1.0, -1 );
+$normHJPC[22][255]['Y1D']['H'][5] = new pair( 1.0, -1 );
+$normHJPC[22][255]['Y1D']['V'][1] = new pair( 1.0, -1 );
+$normHJPC[22][255]['Y1D']['V'][2] = new pair( 1.0, -1 );
+$normHJPC[22][255]['Y1D']['V'][3] = new pair( 1.0, -1 );
+$normHJPC[22][255]['Y1D']['V'][4] = new pair( 1.0, -1 );
+$normHJPC[22][255]['Y1D']['V'][5] = new pair( 1.0, -1 );
+$normHJPC[22][255]['Y1D']['V'][6] = new pair( 1.0, -1 );
+$normHJPC[22][255]['B2D']['H'][1] = new pair( 1.0, -1 );
+$normHJPC[22][255]['B2D']['H'][2] = new pair( 1.0, -1 );
+$normHJPC[22][255]['B2D']['H'][4] = new pair( 1.0, -1 );
+$normHJPC[22][255]['B2D']['V'][1] = new pair( 1.0, -1 );
+$normHJPC[22][255]['Y2U']['H'][1] = new pair( 1.0, -1 );
+$normHJPC[22][255]['Y2U']['H'][2] = new pair( 1.0, -1 );
+$normHJPC[22][255]['Y2U']['H'][4] = new pair( 1.0, -1 );
+$normHJPC[22][255]['Y2U']['V'][1] = new pair( 1.0, -1 );
 
 // sigma = fill-to-fill uncorrelated errors
 // delta = fill-to-fill correlated errors

@@ -24,6 +24,7 @@ using namespace std;
 AnaFillResult::AnaFillResult(UInt_t fillId) : TObject(), fFillId(fillId),
    fAnaGlobResult(0), fStartTime(LONG_MAX), fEndTime(0), fAnaFillExternResult(fillId),
    fPCPolarGraphs(), fPCPolarInjGraphs(), fPCProfRGraphs(), fPCProfRInjGraphs(),
+   fPCPolarPhaseGraphs(), fPCPolarPhaseInjGraphs(),
    fPCTargets(),
    fPCPolarFitRes(), fPolProfRFitRes(),
    fAgsPolFitRes(),
@@ -31,6 +32,7 @@ AnaFillResult::AnaFillResult(UInt_t fillId) : TObject(), fFillId(fillId),
    fFillType(kFILLTYPE_UNKNOWN),
    fAnaMeasResults(), fMeasInfos(), fMeasInfosByPolId(),
    fPCPolars(), fPCPolarUnWs(),
+   fPCPolarPhases(),
    fPCProfRs(),
    fPCPolarsByTargets(),
    fPCProfPolars(), fHJPolars(), fHJAsyms(),
@@ -192,9 +194,11 @@ ValErrPair AnaFillResult::GetIntensDecay(ERingId ringId) const
       Warning("GetIntensDecay", "Fill %d. No fit function defined in intensity graph for ringId %d", fFillId, ringId);
       return decay;
    }
-
-   decay.first  = func->GetParameter(1);
-   decay.second = func->GetParError(1);
+   double p1 = func->GetParameter(1);
+   double p1e = func->GetParError(1);
+   double ff = TMath::Log(0.99);
+   decay.first  = p1 < 0 ? ff/p1 : 0;
+   decay.second = p1 < 0 ? -ff*p1e/p1/p1 : -1;
 
    return decay;
 }
@@ -282,6 +286,7 @@ void AnaFillResult::AddMeasResult(EventConfig &mm)
 
    //Info("AddMeasResult", "fStartTime %d (meas)", mm.fMeasInfo->fStartTime);
    //Info("AddMeasResult", "fStartTime %d", GetStartTime());
+   //Printf("AddMeasResult fStartTime %ld", GetStartTime());
 
    // add or overwrite new AnaFillResult
    fAnaMeasResults[runName] = *mm.fAnaMeasResult;
@@ -356,10 +361,15 @@ void AnaFillResult::Process(DrawObjContainer *ocOut)
       // Get polar meas result
       ValErrPair polarPC = anaMeasResult.GetPCPolar();
       ValErrPair profRPC = anaMeasResult.GetPCProfR();
+      ValErrPair phasePC = anaMeasResult.GetPCPolarPhase();
 
       // Skip invalid results indicated by negative uncertainty
-      if (polarPC.second < 0 || profRPC.second < 0) continue;
-
+      //if (polarPC.second < 0 || profRPC.second < 0) continue;
+      //Info("Process: ", "polarPC %lg +/- %lg", polarPC.first, polarPC.second);
+      //Info("Process: ", "profR %lg +/- %lg", profRPC.first, profRPC.second);
+      //Info("Process: ", "phase %lg +/- %lg", phasePC.first, phasePC.second);
+      if (polarPC.second < 0 || profRPC.second < 0 || phasePC.second < 0) continue;
+      //Info("Process: ", "meas start time %ld, start time %ld", anaMeasResult.GetStartTime(), GetStartTime()); 
       time_t measRelTime = anaMeasResult.GetStartTime() - GetStartTime();
 
       // Pick the graph for this measurement and corresponding polarimeter
@@ -368,10 +378,12 @@ void AnaFillResult::Process(DrawObjContainer *ocOut)
       {
          AppendToPCPolarInjGraph(polId, measRelTime, polarPC.first, 0, polarPC.second);
          AppendToPCProfRInjGraph(polId, tgtOrient, measRelTime, profRPC.first, 0, profRPC.second);
+         AppendToPCPolarPhaseInjGraph(polId, measRelTime, phasePC.first, 0, phasePC.second);
       } else {
          AppendToPCPolarGraph(polId, measRelTime, polarPC.first, 0, polarPC.second);
          AppendToPCProfRGraph(polId, tgtOrient, measRelTime, profRPC.first, 0, profRPC.second);
-
+         AppendToPCPolarPhaseGraph(polId, measRelTime, phasePC.first, 0, phasePC.second);
+	 
          TargetUId  newTarget(polId, tgtOrient, tgtId);
          TargetUId& curTarget = fPCTargets[polId];
 
@@ -423,6 +435,7 @@ void AnaFillResult::Process(DrawObjContainer *ocOut)
       // Calculate average polarizations
       fPCPolars[polId]     = CalcAvrgPolar(polId);
       fPCPolarUnWs[polId]  = CalcAvrgPolarUnweighted(polId);
+      fPCPolarPhases[polId]     = CalcAvrgPolarPhase(polId);
       fPCProfPolars[polId] = CalcAvrgPolProfPolar(polId);
 
       fPCPolarsByTargets[fPCTargets[polId]] = fPCPolars[polId];
@@ -438,6 +451,7 @@ void AnaFillResult::Process(DrawObjContainer *ocOut)
          //fPCProfRInjs[polId][tgtOrient] = CalcAvrgProfRInj(polId, tgtOrient);
          fPCProfRs[polId][tgtOrient]    = CalcAvrgProfR(polId, tgtOrient);
          //printf("fPCProfRs: %f,  %f\n", fPCProfRs[polId][tgtOrient].first, fPCProfRs[polId][tgtOrient].second);
+         Info("Process", "polId %d, tgtOrient %d, fPCProfRs: %lg +/- %lg", polId, tgtOrient, fPCProfRs[polId][tgtOrient].first, fPCProfRs[polId][tgtOrient].second);
       }
 
 
@@ -528,6 +542,23 @@ ValErrPair AnaFillResult::GetPCPolarUnW(EPolarimeterId polId, PolId2ValErrMap *n
 
    return result;
 }
+
+/** */
+ValErrPair AnaFillResult::GetPCPolarPhase(EPolarimeterId polId) const
+{
+   ValErrPair pcPhase(0, -1);
+
+   PolId2ValErrMapConstIter iPolar = fPCPolarPhases.find(polId);
+
+   if (iPolar != fPCPolarPhases.end() )
+   {
+      pcPhase.first  = iPolar->second.first;
+      pcPhase.second = iPolar->second.second;
+   }
+
+   return pcPhase;
+}
+
 
 
 /** Function can return an empty graph. */
@@ -1048,14 +1079,18 @@ ValErrPair AnaFillResult::CalcAvrgPolar(EPolarimeterId polId)
       denom += intens;
 
       // assume no correlation between the polarization slope (par1) and norm (par0)
-      polarErr = sqrt( polarSlopeErr*polarSlopeErr*(time - GetLumiOnRelTime())*(time - GetLumiOnRelTime())/3600/3600 + polarNormErr*polarNormErr);
+      //polarErr = sqrt( polarSlopeErr*polarSlopeErr*(time - GetLumiOnRelTime())*(time - GetLumiOnRelTime())/3600/3600 + polarNormErr*polarNormErr);
+      //zchang
+      polarErr = (time - GetLumiOnRelTime())/3600;
       numerErr += polarErr*intens;
       denomErr += intens;
    }
 
    // Internaly all polarization values are between 0 and 1 except graphs
    avrgPol.first  = numer/denom/100.;
-   avrgPol.second = numerErr/denomErr/100.; // weighted error
+   //avrgPol.second = numerErr/denomErr/100.; // weighted error
+   //zchang
+   avrgPol.second = TMath::Sqrt(TMath::Power(numerErr/denomErr*polarSlopeErr, 2)+TMath::Power(polarNormErr, 2))/100.; // weighted error
 
    return avrgPol;
 }
@@ -1083,9 +1118,9 @@ ValErrPair AnaFillResult::CalcAvrgPolarUnweighted(EPolarimeterId polId)
 
       // Exclude points only if the lumi/phys period is defined && > 600 sec
       // Otherwise include all available measurements in the average
-      if ( abs(GetLumiOffRelTime() - GetLumiOnRelTime()) > 600 &&
-           (time < GetLumiOnRelTime() || time > GetLumiOffRelTime()) ) continue;
-
+      //if ( abs(GetLumiOffRelTime() - GetLumiOnRelTime()) > 600 &&
+      //   (time < GetLumiOnRelTime() || time > GetLumiOffRelTime()) ) continue;
+      //zchang
       polarErr = grPCPolar->GetErrorY(iPoint);
 
       // Internaly all polarization values are between 0 and 1 except graphs
@@ -1095,6 +1130,42 @@ ValErrPair AnaFillResult::CalcAvrgPolarUnweighted(EPolarimeterId polId)
    }
 
    return avrgPol;
+}
+
+/** */
+ValErrPair AnaFillResult::CalcAvrgPolarPhase(EPolarimeterId polId)
+{
+   // Create a container to keep all measurements for polarimeter polId
+   ValErrPair avrgPhase(0, -1);
+
+   const TGraphErrors *grPCPolarPhase = GetPCPolarPhaseGraph(polId);
+
+   if (!grPCPolarPhase) {
+      Warning("CalcAvrgPolarPhase", "No graph defined for polId %d", polId);
+      return avrgPhase;
+   }
+
+   Double_t time, phase, phaseErr;
+
+   // Loop over all polarization points
+   for (UInt_t iPoint=0; iPoint<(UInt_t) grPCPolarPhase->GetN(); iPoint++)
+   {
+      grPCPolarPhase->GetPoint(iPoint, time, phase);
+
+      // Exclude points only if the lumi/phys period is defined && > 600 sec
+      // Otherwise include all available measurements in the average
+      //if ( abs(GetLumiOffRelTime() - GetLumiOnRelTime()) > 600 &&
+      //(time < GetLumiOnRelTime() || time > GetLumiOffRelTime()) ) continue;
+
+      phaseErr = grPCPolarPhase->GetErrorY(iPoint);
+
+      // Internaly all polarization values are between 0 and 1 except graphs
+      ValErrPair phaseVE(phase, phaseErr);
+
+      avrgPhase = utils::CalcWeightedAvrgErr(avrgPhase, phaseVE);
+   }
+
+   return avrgPhase;
 }
 
 
@@ -1154,11 +1225,11 @@ ValErrPair AnaFillResult::CalcAvrgProfR(EPolarimeterId polId, ETargetOrient tgtO
    {
       Double_t time, profR;
       grPCProfR->GetPoint(iPoint, time, profR);
-
+      //Info("CalcAvrgProR", "time: %lg lumi_off: %ld lumi_on: %ld", time, GetLumiOffRelTime(), GetLumiOnRelTime());
       // Exclude points only if the lumi/phys period is defined && > 600 sec
       // Otherwise include all available measurements in the average
-      if ( abs(GetLumiOffRelTime() - GetLumiOnRelTime()) > 600 &&
-           (time < GetLumiOnRelTime() || time > GetLumiOffRelTime()) ) continue;
+      //if ( abs(GetLumiOffRelTime() - GetLumiOnRelTime()) > 600 &&
+           //(time < GetLumiOnRelTime() || time > GetLumiOffRelTime()) ) continue;
 
       Double_t profRErr = grPCProfR->GetErrorY(iPoint);
 
@@ -1447,7 +1518,8 @@ void AnaFillResult::UpdateExternGraphRange()
       for(vector<TGraphErrors*>::const_iterator it = grs.begin(); it != grs.end(); it++)
       {
          TGraphErrors *gr = *it;
-         for (Int_t i=0; i<gr->GetN(); ++i) { gr->GetPoint(i, x, y); gr->SetPoint(i, x - fStartTime, y); }
+         for (Int_t i=0; i<gr->GetN(); ++i) { gr->GetPoint(i, x, y); gr->SetPoint(i, x - fStartTime, y); //if(i==0) Printf("time diff: %.0lf start: %ld bc: %lf", x-fStartTime, fStartTime, y);
+}
       }
    }
 
@@ -1455,7 +1527,8 @@ void AnaFillResult::UpdateExternGraphRange()
       Double_t x, y;
       TGraphErrors *gr = GetAgsPolFitGraph();
       if (gr) {
-         for (Int_t i=0; i<gr->GetN(); ++i) { gr->GetPoint(i, x, y); gr->SetPoint(i, x - fStartTime, y); }
+         for (Int_t i=0; i<gr->GetN(); ++i) { gr->GetPoint(i, x, y); gr->SetPoint(i, x - fStartTime, y); //Printf("time diff: %.0lf pol: %lf", x-fStartTime, y);
+}
       }
    }
 
@@ -1487,7 +1560,6 @@ void AnaFillResult::UpdateExternGraphRange()
          for (Int_t i=0; i<gr->GetN(); ++i) { gr->GetPoint(i, x, y); gr->SetPoint(i, x - fStartTime + 300*(gRandom->Rndm()-0.5), y); }
    }
 }
-
 
 /** */
 void AnaFillResult::FitPCPolarGraphs()
@@ -1662,7 +1734,8 @@ void AnaFillResult::FitAgsPol()
 {
    TGraphErrors *gr = GetAgsPolFitGraph();
    if (gr) {
-      fAgsPolFitRes = gr->Fit("pol0", "QS", "", -0.5 * 60 * 60, 0); // Q - Quiet, S - return FitResult
+      //fAgsPolFitRes = gr->Fit("pol0", "QS", "", -0.5 * 60 * 60, 0); // Q - Quiet, S - return FitResult
+      fAgsPolFitRes = gr->Fit("pol0", "QS",""); // Q - Quiet, S - return FitResult
    }
 }
 
@@ -1739,5 +1812,56 @@ void AnaFillResult::AppendToPCProfRInjGraph(EPolarimeterId polId, ETargetOrient 
    }
 
    Info("AppendToPCProfRInjGraph", "Fill %d. Added measurement to graph polId %d, tgtOrient %d", fFillId, polId, tgtOrient);
+   utils::AppendToGraph(graph, x, y, xe, ye);
+}
+/** Function can return an empty graph. */
+TGraphErrors* AnaFillResult::GetPCPolarPhaseGraph(EPolarimeterId polId) const
+{
+   if (fPCPolarPhaseGraphs.find(polId) == fPCPolarPhaseGraphs.end()) {
+      return 0;
+   }
+
+   return (TGraphErrors*) fPCPolarPhaseGraphs.find(polId)->second;
+}
+
+
+/** Function cannot return empty graph. */
+TGraphErrors* AnaFillResult::GetPCPolarPhaseInjGraph(EPolarimeterId polId)
+{
+   if (fPCPolarPhaseInjGraphs.find(polId) == fPCPolarPhaseInjGraphs.end()) {
+      return 0;
+   }
+
+   return (TGraphErrors*) fPCPolarPhaseInjGraphs.find(polId)->second;
+}
+
+
+/** */
+void AnaFillResult::AppendToPCPolarPhaseGraph(EPolarimeterId polId, Double_t x, Double_t y, Double_t xe, Double_t ye)
+{
+   TGraphErrors *graph = GetPCPolarPhaseGraph(polId);
+
+   if (!graph) {
+      Info("AppendToPCPolarPhaseGraph", "Fill %d. Created new graph for polId %d", fFillId, polId);
+      graph = new TGraphErrors();
+      fPCPolarPhaseGraphs[polId] = graph;
+   }
+
+   Info("AppendToPCPolarPhaseGraph", "Fill %d. Added measurement to graph polId %d", fFillId, polId);
+   utils::AppendToGraph(graph, x, y, xe, ye);
+}
+
+
+/** */
+void AnaFillResult::AppendToPCPolarPhaseInjGraph(EPolarimeterId polId, Double_t x, Double_t y, Double_t xe, Double_t ye)
+{
+   TGraphErrors *graph = GetPCPolarPhaseInjGraph(polId);
+
+   if (!graph) {
+      Info("AppendToPCPolarPhaseInjGraph", "Fill %d. Created new injection graph for polId %d", fFillId, polId);
+      graph = new TGraphErrors();
+      fPCPolarPhaseInjGraphs[polId] = graph;
+   }
+
    utils::AppendToGraph(graph, x, y, xe, ye);
 }

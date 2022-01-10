@@ -16,7 +16,8 @@ MAsymBiasHists::MAsymBiasHists(TDirectory *dir) : DrawObjContainer(dir)
 }
 
 
-void MAsymBiasHists::BookHists(string sid)
+//void MAsymBiasHists::BookHists(string sid)
+void MAsymBiasHists::BookHists()
 {
    fDir->cd();
 
@@ -52,13 +53,14 @@ void MAsymBiasHists::Fill(const EventConfig &rc)
    Double_t runId = rc.fMeasInfo->RUNID;
    Short_t  polId = rc.fMeasInfo->fPolId;
    vector<double> bc = rc.fMeasInfo->GetBiasCurrents();
-
+   Info("Fill", "Fill bc size=%d", bc.size());
    for(int det = 0; det < N_DETECTORS; det++) {
       TGraphErrors *g = grBiasCurrent[polId][det];
 
       if (std::isnan(bc[det])) continue;
 
       int nPoints = g->GetN();
+      //Info("Fill", "npoints=%d det %d bc %lg", nPoints, det, bc[det]);
       g->SetPoint(nPoints, runId, bc[det]);
       g->SetPointError(nPoints, 0.0, 0.0);
    }
@@ -84,8 +86,8 @@ void MAsymBiasHists::UpdateLimits()
          TGraphErrors *g = grBiasCurrent[*iPolId][det];
 
          g->ComputeRange(xmin, ymin, xmax, ymax);
-         h->GetXaxis()->SetLimits(xmin, xmax);
-         h->GetYaxis()->SetLimits(-50., 0.);
+         h->GetXaxis()->SetLimits(xmin-0.5, xmax+0.5);
+         h->GetYaxis()->SetLimits(-25., 15.);
       }
    }
 }

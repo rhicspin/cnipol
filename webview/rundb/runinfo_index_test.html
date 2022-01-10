@@ -1,0 +1,341 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--
+******************************************************************************
+*
+******************************************************************************
+-->
+
+<html>
+<head>
+  <title>RHIC Polarimetry Results: p-Carbon Measurement Database</title>
+  <meta HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+  <meta NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+  <link REL="STYLESHEET" TYPE="text/css" HREF="../main.css">
+  <link REL="STYLESHEET" TYPE="text/css" HREF="../wiki.css">
+  <link REL="STYLESHEET" TYPE="text/css" HREF="../wiki_monobook_main.css">
+</head>
+
+<body bgcolor="#ffffff">
+
+<?php
+include("../head.html");
+?>
+
+<!-- Main text starts here-->
+
+<p><a name="content"/>
+
+<h1>p-Carbon Measurements</h1>
+
+<?php
+
+include_once("utils.php");
+include_once("GlobResult.php");
+include_once("SqlDbReader_test.php");
+include_once("PlotHelper.php");
+include_once("MeasResult.php");
+
+$runSelector = new RunSelector();
+$runSelector->PrintForm();
+
+$sqlDbReader = new SqlDbReader($runSelector);
+$nRuns = $sqlDbReader->CountEntries();
+
+?>
+
+<!--
+<p>
+SQL query: <?//=$sqlDbReader->sqlQuery?>
+-->
+
+<p>
+Runs selected: <?=$sqlDbReader->nResults?>
+
+<p>
+Export to CSV file: <a href="export.php?<?=$runSelector->urlQuery?>">download</a>
+ 
+<?php
+// Create page links
+$page         = 1;
+$nRunsPerPage = 200;
+$nPages       = ceil($nRuns/$nRunsPerPage);
+
+if ( isset($_GET['page']) ) $page = $_GET['page'];
+if ($page > $nPages || $page < 1) $page = 1;
+
+$sqlDbReader->PrintPageIndex($nPages, $page);
+
+$rslt = $sqlDbReader->ReadEntries(($page-1)*$nRunsPerPage, $nRunsPerPage);
+
+// Read file with online polarization values and return an array
+//$onlinePolars = readOnlinePolar(LOG_DIR."/online_polar.dat");
+
+//print "<pre>\n";
+//print_r($row); 
+//print "</pre>\n";
+
+// Arrays for average values
+
+$polarizations = array();
+$phases = array();
+$profileRatios = array();
+
+
+?>
+
+<p>
+<table class="simple cntr" cellspacing=0 align=center>
+<tr>
+   <th rowspan=2>Run
+   <th rowspan=2>Date &amp; Time
+   <th rowspan=2>Polarimeter <br><?=$runSelector->HtmlSortLinks("pi");?>
+   <th rowspan=2>Polarization, %<br><?=$runSelector->HtmlSortLinks("po");?>
+   <th rowspan=2>Phase, degree<br><?=$runSelector->HtmlSortLinks("ph");?>
+   <!--<th rowspan=2>Polarization (online), % -->
+   <th rowspan=2>Prof. Ratio R
+   <th rowspan=2>Type
+   <th rowspan=2>Beam Energy, GeV
+   <th rowspan=2>Target
+   <th rowspan=2>Bunches<br>&minus;/0/+
+   <th rowspan=2>Total Events<br><?=$runSelector->HtmlSortLinks("te");?>
+   <!--<th rowspan=2>Duration-->
+   <th colspan=4>Offline analysis
+<tr>
+   <th>R
+   <th>V
+   <th>Ver<br><?=$runSelector->HtmlSortLinks("av");?>
+   <th>Date &amp; Time<br><?=$runSelector->HtmlSortLinks("at");?>
+
+
+<?php
+//print count($es);
+while ($e = mysql_fetch_assoc($rslt)):
+   // such polarization can't exist
+   if ($e['polarization'] == 1.0)
+   {
+      $e['polarization_error'] = -1.0;
+   }
+   //$e->PrintThis();
+
+   //print "<pre>\n";
+   //print_r($e); 
+   //print "</pre>\n";
+
+   $polId      = $POLARIMETER_ID[$e['polarimeter_id']];
+   $start_time = isset($e['start_time']) ? strtotime($e['start_time']) : 0;
+   $runPeriod  = getRunPeriod($start_time);
+
+   // return to normal flow
+   //$strOnlinePolar = "&nbsp;";
+   //if (isset($onlinePolars[$e['run_name']])) {
+	//   $onlinePolar    = $onlinePolars[$e['run_name']];
+	//   $strOnlinePolar = "&nbsp;<a href='online.php?runid={$e['run_name']}'>".polarPairToString($onlinePolar)."</a>";
+   //   //$strOnlinePolar .= "&nbsp;<a href='../log/{$e['run_name']}.a.png'>p1</a>";
+   //}
+
+   $measurementType = "&nbsp;";
+
+   if (isset($e['measurement_type']) && $e['measurement_type'] >= 0 ) {
+      //$values = preg_split("/[\s,]+/", $e['profile_ratio']);
+      //$profileRatio = sprintf("%5.2f &plusmn; %5.2f", $values[0], $values[1]);
+      $measurementType = $MEASTYPE[$e['measurement_type']];
+   }
+
+   $polarization = "&mdash;";
+   $phase = "&mdash;";
+   $profileRatio = "&mdash;";
+   $beamEnergy   = "&mdash;";
+   $targetId     = "&mdash;";
+   $trTooltip    = "Measurement {$e['run_name']}";
+   $udCounts     = array('-' => "&mdash;", '0' => "&mdash;", '+' => "&mdash;");
+
+   $measConfigFile = DATA_DIR."/{$e['run_name']}/runconfig.php";
+   $runconfig_present = file_exists($measConfigFile);
+
+   if ($measurementType != "undef" && $measurementType != "alpha")
+   {
+      // Apply normalization factor to polarization value
+      $norm2 = getHJPCNorm($runPeriod, intval($e['beam_energy']+0.5), $polId, $e['target_orient'], $e['target_id']);
+      $norm = $norm2->val;
+
+		if ( isset($e['polarization']) ) {
+		   $polarization = sprintf("%5.1f &plusmn; %5.1f", $e['polarization']*100*$norm, $e['polarization_error']*100*$norm);
+         $polarizations[] = new pair($e['polarization']*100*$norm, $e['polarization_error']*100*$norm);
+      }
+     //phase: angle in transverse plane
+		if ( isset($e['phase']) ) {
+		   $phase = sprintf("%5.1f &plusmn; %5.1f", $e['phase']*180/3.14, $e['phase_error']*180/3.14);
+         $phases[] = new pair($e['phase']*180/3.14, $e['phase_error']*180/3.14);
+      }
+
+      if ( isset($e['profile_ratio']) ) {
+         $profileRatio    = sprintf("%5.2f &plusmn; %5.2f", $e['profile_ratio'], $e['profile_ratio_error']);
+         $profileRatios[] = new pair($e['profile_ratio'], $e['profile_ratio_error']);
+      }
+
+      $beamEnergy = isset($e['beam_energy']) ? sprintf("%6.2f", $e['beam_energy']) : $beamEnergy;
+
+      $targetId   = ( isset($e['target_id']) && $e['target_id'] > 0 ) ?
+         "{$e['target_orient']}{$e['target_id']}" : $targetId;
+
+
+      // Get info from the file
+      if ( $runconfig_present )
+      {
+         include($measConfigFile);
+         $trTooltip .= " ";
+
+         $rce = $rc['fMachineParams']['fCavity197MHzVoltage'][0];
+         $trTooltip .= isset($rce) ? "| 197Mhz V: $rce " : "";
+
+         $rce = $rc['fMachineParams']['fStarRotatorCurrents'][0];
+         $trTooltip .= isset($rce) ? "| Rotator: ".sprintf("%.0f", $rce)." " : "";
+         //$trTooltip .= isset($rce) && $rce>10 ? " Rotator: ON" : "";
+
+         $rce = $rc['fTargetParams']['fVelocity'];
+         $trTooltip .= isset($rce) ? "| Target speed: $rce " : "";
+
+         // Look at bunch counts
+         $measResult = new MeasResult();
+         
+         $udCounts = $measResult->GetBunchUpDownCounts($rc['fBeamBunches']);
+
+         unset($rc);
+      }
+	}
+
+	// Set css class
+	$cssPol = "";
+
+	if ($polId[0] == 'B') $cssPol = "bluPol";
+	if ($polId[0] == 'Y') $cssPol = "yelPol";
+
+	if ($polId[2] == 'U') $cssPol .= " bold";
+	#if ($polId[2] == 'D') $cssPol .= "";
+
+   // Offline processed fraction
+   $processedFrac = "&mdash;";
+
+   if ( isset($e['nevents_total']) && isset($e['nevents_processed']) && $e['nevents_total'] != 0 )
+   {
+      $processedFrac = $e['nevents_processed'] == $e['nevents_total'] ? "&#1092;" : sprintf("%4.2f", $e['nevents_processed']/$e['nevents_total']);
+
+      $processedFrac = "<a href='../runs/{$e['run_name']}/{$e['run_name']}.root'>$processedFrac</a>";
+   }
+
+   // video file
+   $videoFile = VIDEO_DIR."/{$e['run_name']}.avi";
+
+   if ( file_exists($videoFile) )
+      $videoFile = "<a href='../video/{$e['run_name']}.avi'>&beta;</a>";
+   else
+      $videoFile = "&mdash;";
+
+
+   // Deal with version now
+	$asymVersion = isset($e['asym_version']) ? $e['asym_version'] : "v0.0.0;";
+	list($human_version, $git_hash) = explode(";", $asymVersion);
+	$asymVersion = "";
+        if ($git_hash)
+		$asymVersion = '<a href="https://github.com/rhicspin/cnipol/commit/' . $git_hash . '">';
+	$asymVersion .= $human_version;
+        if ($git_hash)
+		$asymVersion .= '</a>';
+
+   // Set default directory for run images
+   $dir = "../runs/{$e['run_name']}/images$gSuffix/";
+   $gP = new PlotHelper($dir);
+?>
+
+<tr class=my_tr_highlight title="<?=$trTooltip?>">
+   <td><?php
+if ($runconfig_present) echo '<a href="?runid=' . $e['run_name'] . '">';
+echo $e['run_name'];
+if ($runconfig_present) echo '</a>';
+?>
+   <td class=align_cm><tt><?=date("M d, Y H:i:s D", $start_time)?></tt>
+   <td class="<?=$cssPol?> align_cm"><?=isset($e['polarimeter_id']) ? $POLARIMETER_ID[$e['polarimeter_id']] : "&nbsp;";?>
+   <td class=align_cm><?=$polarization?>
+   <td class=align_cm><?=$phase?>
+   <!--<td class=align_cm><?=$strOnlinePolar?> -->
+   <td class=align_cm><?=$profileRatio?>
+   <td class=align_cm><?=$measurementType?>
+   <td class=align_cm><?=$beamEnergy?>
+   <td class=align_cm><?=$targetId?>
+   <td class=align_cm><?=$udCounts['-']."/".$udCounts['0']."/".$udCounts['+']?>
+   <td align=right><?=isset($e['nevents_total']) ? number_format($e['nevents_total']) : "&nbsp;";?>
+   <td class=align_cm><?=$processedFrac?>
+   <td class=align_cm><?=$videoFile?>
+   <td class=align_cm><?=$asymVersion?>
+   <td class=align_cm><tt><?=isset($e['ana_start_time']) ? date("M d, Y H:i", strtotime($e['ana_start_time'])) : "&nbsp;";?></tt>
+
+<?php
+if ( isset($_GET['himg']) && !empty($_GET['himg']) ) :
+?>
+
+<tr>
+   <td colspan=14 class=align_cm>
+   <?=$gP->img($_GET['himg'], false, 1200)?>
+
+<?php
+endif;
+?>
+
+<?php
+endwhile;
+
+// Now take care of the averages
+$meanPolarization = calcWeigtedAvrgErr($polarizations);
+$meanPhase = calcWeigtedAvrgErr($phases);
+$meanProfileRatio = calcWeigtedAvrgErr($profileRatios);
+?>
+
+<tr>
+   <th colspan=14>&nbsp;<br>&nbsp;
+
+<tr>
+   <th>Mean
+
+   <th>&nbsp;
+   <th>&nbsp;
+   <th><?=(count($polarizations) ? $meanPolarization->ToString("", "%5.2f") : "&nbsp;")?>
+   <th><?=(count($phases) ? $meanPhase->ToString("", "%5.2f") : "&nbsp;")?>
+   <th><?=(count($profileRatios) ? $meanProfileRatio->ToString("", "%5.2f") : "&nbsp;")?>
+   <th>&nbsp;
+   <th>&nbsp;
+   <th>&nbsp;
+   <th>&nbsp;
+   <th>&nbsp;
+   <th>&nbsp;
+   <th>&nbsp;
+   <th>&nbsp;
+   <th>&nbsp;
+
+</table>
+
+<?php
+$sqlDbReader->PrintPageIndex($nPages, $page);
+?>
+
+<h2>Normalization for p-Carbon Measurements</h2>
+
+For details on calculation of normalization factors go to <a
+href="https://wiki.bnl.gov/rhicspin/PCarbon_normalization">https://wiki.bnl.gov/rhicspin/PCarbon_normalization</a>.
+Normalization k<sub>jet/crb</sub> applied to p-Carbon polarization for selected run period is:
+
+<?php
+print(GlobResult::BuildHtmlNormJetCarbon($_GET['rp']));
+?>
+
+
+<!-- Main text ends here-->
+
+
+<?php
+include("../bottom.html");
+?>
+
+
+</body>
+</html>
