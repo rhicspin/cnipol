@@ -40,6 +40,7 @@ protected:
 
    TGraphErrors* MakeGraph(const std::map<opencdev::cdev_time_t, double> &values, int thin_out_factor=1);
    void LoadAgsInfo(opencdev::LogReader &log_reader);
+   void LoadAgsInfo(opencdev::LogReader &log_reader, int fillId);
    void LoadInfo(UInt_t fillId);
 
 public:

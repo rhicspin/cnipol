@@ -20,6 +20,7 @@ if ( isset($_GET['sfx']) && !empty($_GET['sfx']) ) {
 if (isset($_GET['runid']) && !isset($_GET['chanid']))
 {
    $gRunId  = $_GET['runid'];
+   $gRunId  = strip_tags($gRunId);
    $gRunDir = DATA_DIR."/$gRunId";
 
    // Check for correct and existing runid
@@ -74,8 +75,12 @@ if (isset($_GET['runid']) && !isset($_GET['chanid']))
       } else if ( isset($_GET['ach']) && !empty($_GET['ach']) ) // all channel histogram
       {
          include("runinfo_ach.html");
-      } else
+      } else{
+         if( $rc['fRunId'] == 22) {
+           include("runinfo_r22.html");
+         }else
          include("runinfo.html");
+     }
 
    } elseif ($rc['measurement_type'] == 1) {
       include("runinfo_calib.html");
@@ -85,8 +90,12 @@ if (isset($_GET['runid']) && !isset($_GET['chanid']))
       //include("runinfo.html"); 
       if ( isset($_GET['raw']) ) {
          include("runinfo_raw.html");
-      } else
-         include("runinfo.html");
+      } else {
+         if( $rc['fRunId'] == 22) {
+           include("runinfo_r22.html");
+         }else
+           include("runinfo.html");
+      }
    }
 
    exit;
@@ -97,7 +106,9 @@ if (isset($_GET['runid']) && !isset($_GET['chanid']))
 if (isset($_GET['runid']) && isset($_GET['chanid'])) {
 
    $gRunId  = $_GET['runid'];
+   $gRunId  = strip_tags($gRunId);
    $gChanId = $_GET['chanid'];
+   $gChanId = strip_tags($gChanId);
    $gRunDir = DATA_DIR."/$gRunId";
 
    // Check for correct and existing runid
@@ -148,6 +159,5 @@ if (isset($_GET['runid']) && isset($_GET['chanid'])) {
 //   exit;
 //}
 
-include("runinfo_index.html");
-
+include("runinfo_index_test.html");
 ?>

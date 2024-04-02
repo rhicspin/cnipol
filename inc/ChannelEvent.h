@@ -68,6 +68,7 @@ public:
    virtual void Print(const Option_t* opt="") const;
    Bool_t PassCutRawAlpha();
    Bool_t PassCutSiliconChannel();
+   Bool_t PassCutSpinTuneChannel();
    Bool_t PassCutDepEnergyTime();
    Bool_t PassCutKinEnergyAEDepend();
    Bool_t PassCutKinEnergyAEDependAverage();
@@ -76,6 +77,7 @@ public:
    Bool_t PassCutCarbonMassEstimate();
    Bool_t PassCutPulser();
    Bool_t PassCutNoise();
+   Bool_t PassCutNoiseLower();
    Bool_t PassCutEnabledChannel();
    Bool_t PassCutTargetChannel();
    Bool_t PassCutPmtChannel() const;

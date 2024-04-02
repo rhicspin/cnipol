@@ -169,7 +169,8 @@ void MAsymSingleFillHists::BookHistsByPolarimeter(EPolarimeterId polId)
    o[shName] = hist;
 
    shName = "hBCVsFillTime_" + strDirName + "_" + sPolId;
-   hist = new TH2C(shName.c_str(), shName.c_str(), 1, fMinTime, fMaxTime, 1, -50, 0);
+   //Printf("fmintime: %ld fmaxtime: %ld", fMinTime, fMaxTime);
+   hist = new TH2C(shName.c_str(), shName.c_str(), 1, fMinTime, fMaxTime, 1, -25, 15);
    hist->SetTitle("; Time in Fill, hours; BiasCurrent, \\mu A;");
    hist->SetOption("DUMMY GRIDX GRIDY");
    //hist->GetXaxis()->SetTimeOffset(0, "local");
@@ -348,7 +349,9 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
          TGraphErrors *gr = *it;
          gr->SetMarkerStyle(20);
          gr->SetMarkerColor(RunConfig::DetAsColor(det));
-         gr->SetMarkerSize(0.3);
+         gr->SetMarkerSize(1);
+         //Printf("PostFill: %s color: %d", "hBCVsFillTime", RunConfig::DetAsColor(det));
+         //gr->Print();//zchang debug
          hBCVsFillTime_->GetListOfFunctions()->Add(gr, "p");
          det++;
       }
@@ -363,11 +366,12 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
          {
             MeasInfo *measInfo = *it;
             mark_gr->SetPoint(i, measInfo->fStartTime - afr.GetStartTime(), -0.1);
+            //Printf("PostFill: time =%ld", measInfo->fStartTime-afr.GetStartTime()); 
             i++;
          }
 
          mark_gr->SetMarkerStyle(23);
-         mark_gr->SetMarkerSize(5);
+         mark_gr->SetMarkerSize(2);
          hBCVsFillTime_->GetListOfFunctions()->AddFirst(mark_gr, "p");
       }
    }
@@ -389,6 +393,12 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
       TH1* hIntensVsFillTime_ = (TH1*) o["hIntensVsFillTime_" + strDirName + "_" + sRingId];
 
       if (graphErrs && graphErrs->GetN() > 0) {
+         TF1 fitFunc("fitFunc", "exp([0]+[1]*x/3600)");
+         //fitFunc.SetParameter(0, 100);
+         //fitFunc.SetParameter(1, 100);
+         fitFunc.SetParNames("const", "life");
+         graphErrs->Fit(&fitFunc);
+         Info("PostFill", "Fitting intensity vs. time exp(%lg+x*(%lg))", fitFunc.GetParameter(0), fitFunc.GetParameter(1));
          ((TAttMarker*) hIntensVsFillTime_)->Copy(*graphErrs);
          graphErrs->SetMarkerSize(0.8);
          hIntensVsFillTime_->GetListOfFunctions()->Add(graphErrs, "p");

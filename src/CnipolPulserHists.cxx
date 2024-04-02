@@ -183,7 +183,6 @@ void CnipolPulserHists::FillPassOne(ChannelEvent *ch)
 
    string sChId("  ");
    sprintf(&sChId[0], "%02d", chId);
-
    //DrawObjContainer *sd = d["channel" + sChId];
 
    // Speed up the filling process by getting the global bin number
@@ -209,7 +208,7 @@ void CnipolPulserHists::FillPassOne(ChannelEvent *ch)
    hTmp_ch->SetEntries(hTmp_ch->GetEntries()+1);
 
    //((TH1*) sd->o.find("hTimeVsEnergyA_ch" + sChId)->second) -> Fill(ch->GetEnergyA(), ch->GetTime());
-   fhTimeVsEnergyA_ch[chId-1] -> Fill(ch->GetEnergyA(), ch->GetTime());
+   //fhTimeVsEnergyA_ch[chId-1] -> Fill(ch->GetEnergyA(), ch->GetTime()); //zchang
 
    TH1* h1Tmp_ch;
 

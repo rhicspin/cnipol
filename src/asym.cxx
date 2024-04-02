@@ -17,7 +17,10 @@
 #include "MseMeasInfo.h"
 #include "RawDataReader.h"
 #include "RunPeriod.h"
+//#include "SpinTuneMotor.h"
 
+#include "CachingLogReader.h"
+#include "SshLogReader.h"
 
 using namespace std;
 
@@ -44,10 +47,14 @@ int main(int argc, char *argv[])
 
    // Book root file
    gAsymRoot->CreateRootFile(gAsymAnaInfo->GetRootFileName());
-
+   //gAsymRoot->Finalize(); return 1;
    MseMeasInfoX *mseMeasInfoX     = 0;
    MseMeasInfoX *mseMeasInfoXOrig = 0;
-
+   //spin tune motor zchang
+   //if(gAsymAnaInfo->HasSTMBit()){
+	//gAsymRoot->fSpinTuneMotor = new SpinTuneMotor;
+   //}
+   //
    // Check whether the measurement is already in database
    if (gAsymAnaInfo->fFlagUseDb) {
       mseMeasInfoX = gAsymDb->SelectRun(gMeasInfo->GetRunName());
@@ -56,7 +63,9 @@ int main(int argc, char *argv[])
    if (mseMeasInfoX) { // If measurement found in database get its copy for later update with SQL
       mseMeasInfoXOrig  = new MseMeasInfoX(gMeasInfo->GetRunName());
       *mseMeasInfoXOrig = *mseMeasInfoX;
+      Info("MeasInfo", "found in DB");
    } else {            // If measurement not found in database create a new object
+      Info("MeasInfo", "not found in DB");
       mseMeasInfoX = new MseMeasInfoX(gMeasInfo->GetRunName());
    }
 
@@ -100,7 +109,8 @@ int main(int argc, char *argv[])
           endTime = startTime + 600;
       }
 
-      opencdev::LocalLogReader log_reader(gAsymAnaInfo->GetSlowControlLogDir());
+      //opencdev::LocalLogReader log_reader(gAsymAnaInfo->GetSlowControlLogDir());
+      CachingLogReader<SshLogReader> log_reader;
       log_reader.query_timerange_mean("RHIC/Rf/Voltage_Monitor_StripChart", startTime, endTime, &mean_value);
       log_reader.query_timerange_mean("RHIC/PowerSupplies/rot-ps", startTime, endTime, &mean_value);
       log_reader.query_timerange_mean("RHIC/PowerSupplies/snake-ps", startTime, endTime, &mean_value);
@@ -145,9 +155,13 @@ int main(int argc, char *argv[])
    // set preliminary cuts.
 
    rawDataReader.ReadDataPassOne(*mseMeasInfoX);  // Fill primary histograms
-   gAsymRoot->FillDerivedPassOne();         // Fill other histograms from the primary ones
+   //zchang check noise cut
+   //if(gAsymRoot->fChannelEvent->PassCutNoiseLower()) gAsymRoot->FillDerivedPassOne();
+   gAsymRoot->FillDerivedPassOne();
+   // Fill other histograms from the primary ones
    if (gAsymAnaInfo->HasNormalBit())
    {
+      Info("calibrate",  "normal bit");
       gAsymRoot->Calibrate();
    }
    gAsymRoot->PostFillPassOne();            // Make decisions based on hist content/data
@@ -155,11 +169,13 @@ int main(int argc, char *argv[])
    // PassTwo
    gAsymRoot->PreFill();
    rawDataReader.ReadDataPassTwo(*mseMeasInfoX);
-   if (gAsymAnaInfo->HasAlphaBit() ) {
+   if (gAsymAnaInfo->HasAlphaBit()) {
       gAsymRoot->Calibrate();
    }
    gAsymRoot->FillDerived();
    gAsymRoot->PostFill();
+
+   //gAsymRoot->AfterBurner();
 
    if (gAsymAnaInfo->HasNormalBit())
    {
@@ -204,7 +220,6 @@ int main(int argc, char *argv[])
 
    if (gAsymAnaInfo->HasGraphBit())
       gAsymRoot->SaveAs("^.*$", gAsymAnaInfo->GetImageDir());
-
    // Close ROOT file
    gAsymRoot->Finalize();
 

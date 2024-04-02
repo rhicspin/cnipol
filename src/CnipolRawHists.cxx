@@ -102,6 +102,12 @@ void CnipolRawHists::BookHists()
    CanRebin(hist);
    o[shName] = hist;
 
+   shName = "hBunchIdVsRevolutionId";
+   hist = new TH2I(shName.c_str(), shName.c_str(), 1000, 0, 1, N_BUNCHES, 0.5, N_BUNCHES+0.5);
+   hist->SetTitle("; Revolution Id; Events; BunchId;");
+   CanRebin(hist);
+   o[shName] = hist;
+
    shName = "hChIdVsBunchId";
    hist = new TH2I(shName.c_str(), shName.c_str(), N_BUNCHES, 0.5, N_BUNCHES+0.5, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
    hist->SetTitle("; Bunch Id; Channel Id; ");
@@ -207,6 +213,7 @@ void CnipolRawHists::FillPassOne(ChannelEvent *ch)
       fhTvsI_ch[chId-1]->Fill(adcI, tdc);
       fhIvsA_ch[chId-1]->Fill(adcA, adcI);
       ((TH1*) o["hRevolutionId"])->Fill(ch->GetRevolutionId());
+      ((TH1*) o["hBunchIdVsRevolutionId"])->Fill(ch->GetRevolutionId(), bId);
    }
 
    if (gCh2WfdMap) {

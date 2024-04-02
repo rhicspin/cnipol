@@ -58,6 +58,7 @@ ADD_LIBRARY(
 	CnipolRunHists.cxx
 	CnipolScalerHists.cxx
 	CnipolSpinStudyHists.cxx
+	CnipolSpinTuneMotorHists.cxx
 	CnipolTargetHists.cxx
 	DeadLayerCalibrator.cxx
 	DeadLayerCalibratorEDepend.cxx
@@ -86,6 +87,7 @@ ADD_LIBRARY(
 	Target.cxx
 	TargetInfo.cxx
 	TargetUId.cxx
+        AfterBurner.cxx
 	revision-export.cxx
 	Dict.cxx
 	cnipol_toolkit.cxx

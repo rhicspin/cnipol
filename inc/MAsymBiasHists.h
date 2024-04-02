@@ -23,7 +23,8 @@ public:
    MAsymBiasHists();
    MAsymBiasHists(TDirectory *dir);
 
-   void BookHists(std::string sid="");
+   //void BookHists(std::string sid="");
+   void BookHists();
    void BookHistsPolarimeter(EPolarimeterId polId);
    void Fill(const EventConfig &rc);
    virtual void SaveAllAs(ImageFormat fmt_ext, TCanvas &default_canvas, std::string pattern, std::string path, Bool_t thumbs);

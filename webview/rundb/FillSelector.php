@@ -8,7 +8,7 @@ class FillSelector {
    var $urlQuery;
    var $sqlWhere;
    var $sqlOrderBy = "";
-	var $defaultRun = 17;
+   var $defaultRun = 22;
 
    static $queryVarNames  = array("rp", "fn", "ft", "be", "mode",   "srtn", "srtd");
 
@@ -42,7 +42,7 @@ class FillSelector {
       if ( isset($_GET['rp']) && array_key_exists($_GET['rp'], $RUN_PERIOD)) {
          $rp = $_GET['rp'];
          $this->sqlWhere .= " AND fill_polar.fill > '{$RUN_PERIOD_BY_FILL[$rp]['start']}' AND fill_polar.fill < '{$RUN_PERIOD_BY_FILL[$rp]['end']}'";
-      } else if ( isset($_GET['rp']) && empty($_GET['rp'])) {
+      }else if ( isset($_GET['rp']) && empty($_GET['rp'])) {
 
       } else {
          $rp = $this->defaultRun;
@@ -51,10 +51,10 @@ class FillSelector {
       }
 
       if (!empty($_GET['fn']))
-         $this->sqlWhere .= " AND fill_polar.fill LIKE '{$_GET['fn']}'";
+        $this->sqlWhere .= " AND fill_polar.fill LIKE '{$_GET['fn']}'";
 
       if (isset($_GET['ft']) && array_key_exists($_GET['ft'], $FILLTYPE)) {
-         $this->sqlWhere .= " AND type = {$_GET['ft']}";
+        $this->sqlWhere .= " AND type = {$_GET['ft']}";
       } else if ( isset($_GET['ft']) && empty($_GET['ft'])) {
 
       }
@@ -62,7 +62,8 @@ class FillSelector {
       if (!empty($_GET['be']))
          $this->sqlWhere .= " AND ROUND(beam_energy) = {$_GET['be']}";
 
-      $this->sqlWhere .= " AND (fill_polar.stop_time = '0000-00-00 00:00:00' OR (fill_polar.stop_time - fill_polar.start_time) > 400)";
+      if($rp < 22)
+        $this->sqlWhere .= " AND (fill_polar.stop_time = '0000-00-00 00:00:00' OR (fill_polar.stop_time - fill_polar.start_time) > 400)";
 
       //$this->sqlWhere .= " AND beam_energy >= {$BEAM_ENERGY_INJ}";
    } //}}}

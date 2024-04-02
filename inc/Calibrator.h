@@ -28,7 +28,7 @@ public:
    Float_t          fRMSBananaChi2Ndf;
    Float_t          fRMSOfLogsBananaChi2Ndf;
 
-public:
+//public:
 
    Calibrator();
    ~Calibrator();

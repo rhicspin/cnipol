@@ -678,7 +678,6 @@ void DrawObjContainer::FillPassOne(ChannelEvent *ch)
 void DrawObjContainer::FillDerivedPassOne()
 {
    DrawObjContainerMapIter isubd;
-
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
       isubd->second->FillDerivedPassOne();
    }

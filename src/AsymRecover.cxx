@@ -8,7 +8,6 @@
 // 
 //  Creation  :   4/12/2006
 //                
-
 #include "AsymRecover.h"
 #include "AsymRecoverUserDefined.h"
 #include "RunConfig.h"
@@ -21,12 +20,14 @@ using namespace std;
 //             : were screwed up
 void AsymRecover::OverwriteSpinPattern(int index)
 {
-   cerr << "Recovery: Spin pattern is ovewritten by user defined pattern index(" 
+   cout << "Recovery: Spin pattern is overwritten by user defined pattern index(" 
         << index << ")" << endl;
  
    for (int bid=1; bid<N_BUNCHES; bid++)
    {
-      gMeasInfo->fBeamBunches[bid].SetBunchSpin( (ESpinState) UserDefinedFillPattern[index][bid-1] );
+      gMeasInfo->fBeamBunches[bid].SetBunchSpin( (ESpinState) UserDefinedSpinPattern[index][bid-1] );
+      //string sSS = gRunConfig.AsString( gMeasInfo->GetBunchSpin(bid) );
+      //cerr<<"bid="<<bid<<" spin="<<sSS.c_str()<<endl;
    }
 }
 
@@ -35,7 +36,7 @@ void AsymRecover::OverwriteSpinPattern(int index)
 //             : were screwed up
 void AsymRecover::OverwriteFillPattern(int index)
 {
-   cout << "Recovery: Fill pattern is ovewritten by user defined pattern index(" 
+   cout << "Recovery: Fill pattern is overwritten by user defined pattern index(" 
         << index << ")" << endl;
  
    for (int bid=1; bid<=N_BUNCHES; bid++)

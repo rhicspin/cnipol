@@ -15,6 +15,9 @@
 #include "MseMeasInfo.h"
 #include "RunPeriod.h"
 
+#include "CachingLogReader.h"
+#include "SshLogReader.h"
+
 #include "revision-export.h"
 
 ClassImp(MeasInfo)
@@ -442,9 +445,6 @@ void MeasInfo::Update(const MseMeasInfoX& run)
    while (sstr >> chId) {
       DisableChannel(chId);
    }
-   if (!sstr.eof()) {
-      Fatal("Update", "Could not parse run period's disabled_channels from \"%s\", it must be whitespace-delimetered list of numbers", run.disabled_channels.c_str());
-   }
 
    // Check for horizontal targets and disable 90 degree detectors
    if (fTargetOrient == 'H') {
@@ -473,11 +473,14 @@ void MeasInfo::Update(const MseMeasInfoX& run)
    } else if (RUNID >= 17000 && RUNID < 18000) { // Run 13
       fRunId = 13;
       gCh2WfdMap = ch2WfdMap_run13;
-   } else if (RUNID >= 18000 && RUNID < 20000) { // Run 15
+   } else if (RUNID >= 18000 && RUNID < 20000) {
       fRunId = 15;
       gCh2WfdMap = ch2WfdMap_run13;
-   } else if (RUNID >= 20000) { // Run 17
+   } else if(RUNID >= 20000 && RUNID < 31000){
       fRunId = 17;
+      gCh2WfdMap = ch2WfdMap_run11;
+   } else if(RUNID >= 31000){
+      fRunId = 22;
       gCh2WfdMap = ch2WfdMap_run11;
    } else {
       // default Run value
@@ -607,6 +610,14 @@ Bool_t MeasInfo::IsDisabledChannel(UShort_t chId)
 Bool_t MeasInfo::IsSiliconChannel(UShort_t chId)
 {
    if ( chId > 0 && chId <= N_SILICON_CHANNELS)
+      return true;
+
+   return false;
+}
+
+Bool_t MeasInfo::IsSpinTuneChannel(UShort_t chId)
+{
+   if (chId == 80)
       return true;
 
    return false;
@@ -777,11 +788,11 @@ vector<double> MeasInfo::GetBiasCurrents() const
       }
    }
 
-   AnaInfo *anaInfo = gAsymAnaInfo ? (AnaInfo*)gAsymAnaInfo : (AnaInfo*)gMAsymAnaInfo;
-
-   static opencdev::LocalLogReader log_reader(anaInfo->GetSlowControlLogDir());
-
+   //AnaInfo *anaInfo = gAsymAnaInfo ? (AnaInfo*)gAsymAnaInfo : (AnaInfo*)gMAsymAnaInfo;
+   //static opencdev::LocalLogReader log_reader(anaInfo->GetSlowControlLogDir());
+   CachingLogReader<SshLogReader> log_reader;
    string logger_name = BiasCurrentUtil::GetBiasCurrentLoggerName((EPolarimeterId)fPolId);
+   Info("BiasCurrent", "logger: %s", logger_name.c_str());
    opencdev::mean_result_t bias_mean_value;
 
    log_reader.query_timerange_mean(logger_name, startTime, endTime, &bias_mean_value);
@@ -828,6 +839,7 @@ EPolarimeterId MeasInfo::ExtractPolarimeterId(std::string runName)
  * "New system" streamer with backward-compatibility to old files.
  * Implemented as suggested in https://root.cern.ch/root/SchemaEvolution.html
  */
+/*
 void MeasInfo::Streamer(TBuffer &R__b)
 {
    // Stream an object of class MeasInfo.
@@ -841,9 +853,9 @@ void MeasInfo::Streamer(TBuffer &R__b)
       }
       TObject::Streamer(R__b);
       R__b >> fBeamEnergy;
-      fMachineParams.Streamer(R__b);
+      //fMachineParams.Streamer(R__b);
       R__b >> fHasMachineParamsInRawData;
-      fTargetParams.Streamer(R__b);
+      //fTargetParams.Streamer(R__b);
       R__b >> fExpectedGlobalTdcOffset;
       R__b >> fExpectedGlobalTimeOffset;
       { TString R__str; R__str.Streamer(R__b); fRunName = R__str.Data(); }
@@ -956,4 +968,4 @@ void MeasInfo::Streamer(TBuffer &R__b)
    } else {
       MeasInfo::Class()->WriteBuffer(R__b, this);
    }
-}
+}*/

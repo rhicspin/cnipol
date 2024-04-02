@@ -7,8 +7,8 @@
 #include <sys/stat.h>
 
 #include "TObject.h"
-#include "TSystem.h"
 
+#include "UserGroup.h"
 #include "AsymCommon.h"
 
 
@@ -59,7 +59,7 @@ public:
    Bool_t           fFlagUpdateDb;
    Bool_t           fFlagCreateThumbs;
    Bool_t           fFlagVerbose;       //!
-   UserGroup_t      fUserGroup;
+   UserGroup      fUserGroup;
    Short_t          fAlphaSourceCount;
 
 public:

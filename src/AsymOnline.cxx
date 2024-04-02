@@ -2,7 +2,7 @@
 
 #include <cstring>
 
-
+/*
 RecordHeaderStruct& RecordHeaderStruct::operator=(const RecordHeaderStruct &rec)
 {
    len                = rec.len;
@@ -56,8 +56,8 @@ RecordMachineParams& RecordMachineParams::operator=(const RecordMachineParams &r
 
    return *this;
 }
-
-
+*/
+/*
 void RecordMachineParams::Streamer(TBuffer &R__b)
 {
    // Stream an object of class RecordMachineParams.
@@ -81,8 +81,8 @@ void RecordMachineParams::Streamer(TBuffer &R__b)
       //R__b.SetByteCount(R__c, kTRUE);
    }
 }
-
-
+*/
+/*
 RecordTargetParams& RecordTargetParams::operator=(const RecordTargetParams &rec)
 {
    header = rec.header;
@@ -94,8 +94,8 @@ RecordTargetParams& RecordTargetParams::operator=(const RecordTargetParams &rec)
 
    return *this;
 }
-
-
+*/
+/*
 void RecordTargetParams::Streamer(TBuffer &R__b)
 {
    // Stream an object of class RecordMachineParams.
@@ -119,8 +119,8 @@ void RecordTargetParams::Streamer(TBuffer &R__b)
       //R__b.SetByteCount(R__c, kTRUE);
    }
 }
-
-
+*/
+/*
 RecordWcm::RecordWcm() : fFillDataM(), fWcmBeamM(0), fBunchDataM(), fBunchLengthM(0),
    fProfileHeaderM()//, fProfileDataM(0)
 {
@@ -152,7 +152,6 @@ void RecordWcm::Print()
 }
 
 
-/** */
 void TRecordConfigRhicStruct::Streamer(TBuffer &buf)
 {
    if (buf.IsReading()) {
@@ -200,7 +199,6 @@ void TRecordConfigRhicStruct::Streamer(TBuffer &buf)
 }
 
 
-/** */
 void TRecordConfigRhicStruct::Print(const Option_t* opt) const
 {
    //long len = header.len;
@@ -220,3 +218,4 @@ void TRecordConfigRhicStruct::Print(const Option_t* opt) const
       printf(" acoef: %f, %f, TOFLength: %f\n", chanconf[i].acoef, chanconf[i].t0, chanconf[i].TOFLength);
    }
 }
+*/

@@ -273,17 +273,17 @@ void RunConst::PrintAll()
 
 
 /** */
-TBuffer & operator<<(TBuffer &buf, TRecordConfigRhicStruct *&rec)
+/*TBuffer & operator<<(TBuffer &buf, TRecordConfigRhicStruct *&rec)
 {
    if (!rec) return buf;
    //printf("operator<<(TBuffer &buf, TRecordConfigRhicStruct *rec) : \n");
    rec->Streamer(buf);
    return buf;
-}
+}*/
 
 
 /** */
-TBuffer & operator>>(TBuffer &buf, TRecordConfigRhicStruct *&rec)
+/*TBuffer & operator>>(TBuffer &buf, TRecordConfigRhicStruct *&rec)
 {
    //printf("operator>>(TBuffer &buf, TRecordConfigRhicStruct *rec) : \n");
    //if (!rec) return buf; // of course it is 0!
@@ -299,7 +299,7 @@ TBuffer & operator>>(TBuffer &buf, TRecordConfigRhicStruct *&rec)
    rec->Streamer(buf);
 
    return buf;
-}
+}*/
 
 
 //std::string strip(std::string const& str, char const* sepSet)

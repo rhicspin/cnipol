@@ -47,11 +47,11 @@ RunConfig::RunConfig() : TObject(), fPolarimeters(), fTargets(), fMeasTypes(),
    fRings.insert(kBLUE_RING);
    fRings.insert(kYELLOW_RING);
 
-   fBeamEnergies.insert(kINJECTION);
-   fBeamEnergies.insert(kBEAM_ENERGY_100);
-   fBeamEnergies.insert(kBEAM_ENERGY_250);
-   fBeamEnergies.insert(kBEAM_ENERGY_255);
-   fBeamEnergies.insert(kBEAM_ENERGY_104);
+   //fBeamEnergies.insert(kINJECTION);
+   //fBeamEnergies.insert(kBEAM_ENERGY_100);
+   //fBeamEnergies.insert(kBEAM_ENERGY_250);
+   //fBeamEnergies.insert(kBEAM_ENERGY_255);
+   //fBeamEnergies.insert(kBEAM_ENERGY_104);
 
    fSpinStates.insert(kSPIN_DOWN);
    fSpinStates.insert(kSPIN_NULL);
@@ -176,6 +176,10 @@ string RunConfig::AsString(EBeamEnergy beamEnergy)
 	   return "250";
    case kBEAM_ENERGY_255:
 	   return "255";
+   case kBEAM_ENERGY_254:
+	   return "254";
+   case kBEAM_ENERGY_253:
+	   return "253";
    default:
       return "UNK";
    }

@@ -36,6 +36,13 @@ public:
    virtual void query_timerange(const string &logger, opencdev::cdev_time_t start, opencdev::cdev_time_t end, opencdev::result_t *values) override;
    virtual void query_fill(const string &logger, int fill_id, opencdev::result_t *values) override;
    virtual void get_fill_events(int fill_id, const string &ev_name, vector<opencdev::cdev_time_t> *values);
+
+   /*zchang*/
+  /*
+  //template<typename K, typename V>V val_add(V sum, const std::pair<K, V> &p);
+   void calculate_mean(const opencdev::result_t &result, opencdev::mean_result_t *mean_result) const;
+   void query_timerange_mean(const std::string &logger, opencdev::cdev_time_t starttime, opencdev::cdev_time_t endtime, opencdev::mean_result_t *mean_result);
+  */
 };
 
 #endif

@@ -24,6 +24,10 @@
 #include "CnipolRunHists.h"
 #include "CnipolScalerHists.h"
 #include "CnipolSpinStudyHists.h"
+//zchang
+#include "SpinTuneMotor.h"
+#include "CnipolSpinTuneMotorHists.h"
+//
 #include "CnipolTargetHists.h"
 #include "DeadLayerCalibrator.h"
 #include "DeadLayerCalibratorEDepend.h"
@@ -87,7 +91,8 @@ AsymRoot::AsymRoot() :
    fRawEventTree(0), fAnaEventTree(0),
    fChannelEventTrees(), fAnaEvent(new AnaEvent()),
    fChannelEvent(new ChannelEvent()), fChannelData(new ChannelData()),
-   fChannelEvents(), fEventConfig(new EventConfig()), fHists(0)
+   //fChannelEvents(), fEventConfig(new EventConfig()), fSpinTuneMotor(new SpinTuneMotor), fHists(0)
+   fChannelEvents(), fEventConfig(new EventConfig()), fSpinTuneMotor(0), fHists(0)
 {
    gStyle->SetPalette(1);
    gStyle->SetOptFit(1111);
@@ -116,7 +121,7 @@ AsymRoot::~AsymRoot()
    delete fChannelEvent; fChannelEvent = 0;
    delete fChannelData;  fChannelData  = 0;
    delete fEventConfig;  fEventConfig  = 0;
-
+   if(fSpinTuneMotor) free(fSpinTuneMotor);
    if (!fHists) { delete fHists; fHists = 0; }
 }
 
@@ -162,7 +167,16 @@ void AsymRoot::CreateRootFile(string filename)
       fHists->d["std"] = oc;
       fHistCuts[kCUT_CARBON].insert(oc);
    }
+   if (!gAsymAnaInfo->HasNormalBit() && gAsymAnaInfo->HasNoiseBit()) {
+      dir = new TDirectoryFile("calib", "calib", "", fOutRootFile);
+      fHists->d["calib"] = new CnipolCalibHists(dir);
 
+      dir = new TDirectoryFile("std", "std", "", fOutRootFile);
+      oc  = new CnipolHists(dir);
+      fHists->d["std"] = oc;
+      fHistCuts[kCUT_CARBON].insert(oc);
+      //fHistCuts[kCUT_NOISE_LOWER].insert(oc);
+    }
    // If requested create scaler histograms and add them to the container
    if (gAsymAnaInfo->HasScalerBit()) {
       dir = new TDirectoryFile("scalers", "scalers", "", fOutRootFile);
@@ -206,8 +220,33 @@ void AsymRoot::CreateRootFile(string filename)
       oc  = new CnipolAsymHists(dir);
       fHists->d["asym"] = oc;
       fHistCuts[kCUT_CARBON].insert(oc);
+      //zchang
+      //dir = new TDirectoryFile("sptm", "sptm", "", fOutRootFile);
+      //oc  = new CnipolSpinTuneMotorHists(dir);
+      //fHists->d["sptm"] = oc;
+      //fHistCuts[kCUT_CARBON].insert(oc);
+      //
    }
-
+   //zchang
+   if(gAsymAnaInfo->HasSTMBit()) {
+      gAsymRoot->fSpinTuneMotor = new SpinTuneMotor;
+      dir = new TDirectoryFile("sptm", "sptm", "", fOutRootFile);
+      oc  = new CnipolSpinTuneMotorHists(dir);
+      fHists->d["sptm"] = oc;
+      fHistCuts[kCUT_CARBON].insert(oc);
+   }
+   //zchang noise study
+   //if(gAsymAnaInfo->HasNoiseBit()) {
+      //dir = new TDirectoryFile("noise", "noise", "", fOutRootFile);
+      //oc  = new CnipolAsymHists(dir);
+      //fHists->d["noise"] = oc;
+      //fHistCuts[kCUT_NOISE_LOWER].insert(oc);
+      //
+      //dir = new TDirectoryFile("npreproc", "npreproc", "", fOutRootFile);
+      //oc  = new CnipolPreprocHists(dir);
+      //fHists->d["npreproc"] = oc;
+   //}
+   //
    if (gAsymAnaInfo->HasKinematBit()) {
       // Pre mass cut
       dir = new TDirectoryFile("kinema_premass", "kinema_premass", "", fOutRootFile);
@@ -233,6 +272,7 @@ void AsymRoot::CreateRootFile(string filename)
       dir = new TDirectoryFile("pulser", "pulser", "", fOutRootFile);
       oc  = new CnipolPulserHists(dir);
       fHists->d["pulser"] = oc;
+      fHistCuts[kCUT_PASSONE].insert(oc); //zchang
       //fHistCuts[kCUT_PASSONE_PULSER].insert(oc);
       //fHistCuts[kCUT_CARBON_EB].insert(oc);
    }
@@ -245,7 +285,8 @@ void AsymRoot::CreateRootFile(string filename)
    }
 
    // Should be reconsidered once preproc is used to fill raw hists for alpha runs
-   if (!gAsymAnaInfo->HasAlphaBit()) {
+   //if (!gAsymAnaInfo->HasAlphaBit()) {
+   if (!gAsymAnaInfo->HasAlphaBit() && !gAsymAnaInfo->HasPulserBit()) {// zchang
       dir = new TDirectoryFile("run", "run", "", fOutRootFile);
       fHists->d["run"] = new CnipolRunHists(dir);
 
@@ -320,8 +361,15 @@ void AsymRoot::AddSpinFlipperMarker()
    UInt_t revId = fChannelEvent->GetRevolutionId();
    fEventConfig->GetMeasInfo()->AddSpinFlipperMarker(revId);
 }
-
-
+void AsymRoot::FillSpinTuneMotor()
+{
+  UInt_t rev = fChannelEvent->GetRevolutionId();
+  UChar_t bx = fChannelEvent->GetBunchId();
+  unsigned long long mark = 120*rev + bx;
+  fSpinTuneMotor->Add(mark);
+  //test zchang
+  //cout<<dec<<"rev: "<<rev<<" bx: "<<(int)bx<<" size: "<<fSpinTuneMotor->Size()<<endl;
+}
 /** */
 void AsymRoot::FillPassOne(ECut cut)
 {
@@ -396,6 +444,9 @@ void AsymRoot::FillDerived()
    // asym depends on std
    if (gAsymAnaInfo->HasAsymBit() && gAsymAnaInfo->HasNormalBit() ) {
       fHists->d["asym"]->FillDerived( *fHists );
+      //zchang
+      //if(gAsymAnaInfo->HasNoiseBit())
+        //fHists->d["noise"]->FillDerived( *fHists );
    }
 
    // profile depends on asym
@@ -447,12 +498,18 @@ void AsymRoot::FillProfileHists(UInt_t n, int32_t *hData)
 /** */
 void AsymRoot::FillRunHists()
 {
-   if (gAsymAnaInfo->HasAlphaBit()) return;
+   //if (gAsymAnaInfo->HasAlphaBit()) return;
+   if (gAsymAnaInfo->HasAlphaBit() || gAsymAnaInfo->HasPulserBit()) return; //zchang
 
    ((CnipolRunHists*) fHists->d["run"])->Fill(*gMeasInfo);
 }
 
 
+/*void AsymRoot::AfterBurner()
+{
+  if(gAsymAnaInfo->HasAsymBit())
+    ((CnipolAsymHists*) fHists->d["asym"])->AfterBurner();
+}*/
 /**
  *
  */
@@ -603,14 +660,18 @@ void AsymRoot::UpdateCalibrator()
       fEventConfig->fCalibrator->CopyAlphaCoefs(*eventConfig->fCalibrator);
 
       if (!fEventConfig->GetAnaInfo()->HasNoGainCorrectionBit()) {
+         Info("UpdateCalibrator", "Apply bias current correction");
          fEventConfig->fCalibrator->ApplyBiasCurrentCorrection(gMeasInfo, true);
       } else {
+         Info("UpdateCalibrator", "Use plain alpha gain");
          fEventConfig->fCalibrator->UsePlainAlphaGain();
       }
 
       delete eventConfig;
       delete f;
 
+   }else if (anaInfo->HasPulserBit()){
+      Info("UpdateCalibrator", "Test pulser");
    } else {
       Fatal("UpdateCalibrator", "Cannot select calibrator for this kind of run");
    }
@@ -797,7 +858,8 @@ void AsymRoot::Finalize()
    fHists->Write(); // this is NOT equivalent to fOutRootFile->Write();
 
    fOutRootFile->cd();
-   fEventConfig->Write("measConfig");
+   //fEventConfig->Write("measConfig");
+   if(!gAsymAnaInfo->HasPulserBit()) fEventConfig->Write("measConfig"); //zchang
 
    // close fOutRootFile
    fOutRootFile->Close();
